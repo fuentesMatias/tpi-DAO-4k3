@@ -1,1 +1,65 @@
-venv
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribución de paquetes
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Archivos de virtualenv
+.venv/
+venv/
+ENV/
+env/
+*.env
+*.virtualenv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Archivos creados por IDEs/editores
+.vscode/
+.idea/
+*.swp
+*.sublime-project
+*.sublime-workspace
+
+# Archivos relacionados con pruebas
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+htmlcov/
+
+# Archivos de configuración y logs
+*.log
+*.pot
+*.mo
+*.tmp
+
+# Base de datos SQLite
+*.sqlite3
+*.db
+
+# Archivos de Jupyter Notebook
+.ipynb_checkpoints/
+
+# Archivos de configuración de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos y carpetas de Docker
+docker-compose.override.yml
+*.dockerfile
+docker/
+
+# Archivos de configuración de Python
+*.ini
+*.cfg
+*.yaml
+
