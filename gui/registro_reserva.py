@@ -1,5 +1,6 @@
 import tkinter as tk
-from database.conexion import ConexionDB
+from database.conexion import DbSingleton
+
 
 class RegistroReserva:
     def __init__(self, root):
@@ -26,7 +27,9 @@ class RegistroReserva:
         self.personas_entry = tk.Entry(root)
         self.personas_entry.grid(row=4, column=1)
 
-        tk.Button(root, text="Registrar", command=self.registrar_reserva).grid(row=5, column=0, columnspan=2)
+        tk.Button(root, text="Registrar", command=self.registrar_reserva).grid(
+            row=5, column=0, columnspan=2
+        )
 
     def registrar_reserva(self):
         cliente = self.cliente_entry.get()
@@ -35,15 +38,15 @@ class RegistroReserva:
         fecha_salida = self.fecha_salida_entry.get()
         personas = self.personas_entry.get()
 
-        db = ConexionDB()
-        cursor = db.get_cursor()
-        cursor.execute(
+        db = DbSingleton()
+        db.execute_query(
             "INSERT INTO reservas (id_cliente, id_habitacion, fecha_entrada, fecha_salida, personas) "
             "VALUES (%s, %s, %s, %s, %s)",
-            (cliente, habitacion, fecha_entrada, fecha_salida, personas)
+            (cliente, habitacion, fecha_entrada, fecha_salida, personas),
         )
         db.commit()
         print(f"Reserva registrada exitosamente para el cliente {cliente}")
+
 
 if __name__ == "__main__":
     root = tk.Tk()

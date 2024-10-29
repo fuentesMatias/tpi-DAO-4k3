@@ -1,11 +1,10 @@
-from database.conexion import ConexionDB
+from database.conexion import DbSingleton
 
 def crear_tablas():
-    db = ConexionDB()
-    cursor = db.get_cursor()
+    db = DbSingleton()
 
     # Crear tablas si no existen
-    cursor.execute("""
+    db.execute_query("""
         CREATE TABLE IF NOT EXISTS clientes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
@@ -13,7 +12,7 @@ def crear_tablas():
         )
     """)
 
-    cursor.execute("""
+    db.execute_query("""
         CREATE TABLE IF NOT EXISTS habitaciones (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             numero TEXT NOT NULL,
@@ -22,7 +21,7 @@ def crear_tablas():
         )
     """)
 
-    cursor.execute("""
+    db.execute_query("""
         CREATE TABLE IF NOT EXISTS reservas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_cliente INTEGER,

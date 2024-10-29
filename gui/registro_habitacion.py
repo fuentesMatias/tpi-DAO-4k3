@@ -1,5 +1,5 @@
 import tkinter as tk
-from database.conexion import ConexionDB
+from database.conexion import DbSingleton
 
 class RegistroHabitacion:
     def __init__(self, root):
@@ -25,9 +25,8 @@ class RegistroHabitacion:
         tipo = self.tipo_entry.get()
         precio = self.precio_entry.get()
 
-        db = ConexionDB()
-        cursor = db.get_cursor()
-        cursor.execute("INSERT INTO habitaciones (numero, tipo, precio) VALUES (?, ?, ?)", (numero, tipo, precio))
+        db = DbSingleton()
+        db.execute_query("INSERT INTO habitaciones (numero, tipo, precio) VALUES (?, ?, ?)", (numero, tipo, precio))
         db.commit()
 
         print(f"Habitación {numero} registrada con éxito")
