@@ -15,3 +15,8 @@ class GestorReserva():
 
     def getHabitaciones(self):
         return self._habitaciones
+    
+    def getReservasByClienteId(self, id_cliente):
+        query = "SELECT * FROM reservas WHERE id_cliente = ?"
+        reservas_data = self._db.fetch_query(query, (id_cliente,))
+        return reservas_data
