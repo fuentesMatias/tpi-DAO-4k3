@@ -1,8 +1,8 @@
 class Habitacion:
-    def __init__(self, numero, tipo, estado, precioPorNoche):
+    def __init__(self, numero, tipo, precioPorNoche):
         self._numero = numero
         self._tipo = tipo
-        self._estado = estado
+        self._estado = "disponible"
         self._precioPorNoche = precioPorNoche
 
     def getNumero(self):
@@ -31,3 +31,9 @@ class Habitacion:
 
     def __str__(self) -> str:
         return f"N° de Habitacion: {str(self.getNumero())} | Tipo: {self.getTipo()} | Estado: {self.getEstado()} | Precio por noche: ${str(self.getPrecioPorNoche())}"
+
+    def reservar(self):
+        self._estado = "reservada"
+
+    def disponibilizar(self):
+        self._estado = "disponible"
