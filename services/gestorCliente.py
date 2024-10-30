@@ -18,5 +18,10 @@ class GestorCliente():
     def registrarCliente(self, nombre, apellido, direccion, telefono, email):
         query = "INSERT INTO clientes (nombre, apellido, direccion, telefono, email) VALUES (?, ?, ?, ?, ?)"
         self._db.execute_query(query, (nombre, apellido, direccion, telefono, email))
+        self._db.commit()
 
+    def getClientes(self):
+        clientes_data = self._db.fetch_query("SELECT * FROM clientes")
+        clientes = [Cliente(*data) for data in clientes_data]
+        return clientes
         

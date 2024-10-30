@@ -39,3 +39,8 @@ class GestorReserva:
             "INSERT INTO reservas(id_cliente, id_habitacion, fecha_entrada, fecha_salida, personas) VALUES (?, ?, ?, ?, ?)",
             (idCliente, idHabitacion, fechaEntrada, fechaSalida, cantPersonas),
         )
+    
+    def getReservasByClienteId(self, id_cliente):
+        query = "SELECT * FROM reservas WHERE id_cliente = ?"
+        reservas_data = self._db.fetch_query(query, (id_cliente,))
+        return reservas_data

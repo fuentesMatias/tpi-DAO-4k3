@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS clientes (
 -- Tabla de habitaciones
 CREATE TABLE IF NOT EXISTS habitaciones (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    numero TEXT NOT NULL,
+    numero TEXT NOT NULL UNIQUE,
     tipo TEXT CHECK (tipo IN ('simple', 'doble', 'suite')) NOT NULL,
     estado TEXT CHECK (estado IN ('disponible', 'ocupada')) DEFAULT 'disponible',
     precio REAL NOT NULL
