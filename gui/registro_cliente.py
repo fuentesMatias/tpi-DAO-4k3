@@ -1,5 +1,6 @@
 import tkinter as tk
 from database.conexion import DbSingleton
+from services.gestorCliente import GestorCliente
 
 
 class VentanaRegistrarCliente:
@@ -38,16 +39,12 @@ class VentanaRegistrarCliente:
         telefono = self.telefono_entry.get()
         email = self.mail_entry.get()
 
-        db = DbSingleton()
-        db.execute_query(
-            """
-            INSERT INTO clientes (nombre, apellido, direccion, telefono, email)
-            VALUES (?, ?, ?, ?, ?)
-            """,
-            (nombre, apellido, direccion, telefono, email),
-        )
-        db.commit()
-
+        try:
+            gestorCliente = GestorCliente()
+            gestorCliente.registrarCliente(nombre, apellido, direccion, telefono, email)
+        except Exception as e:
+            print(f"Error al registrar cliente: {e}")
+            return
         print(f"Cliente {nombre} {apellido} registrado con éxito")
 
 

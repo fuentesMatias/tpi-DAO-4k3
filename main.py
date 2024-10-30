@@ -4,10 +4,14 @@ from database.crear_db import crear_tablas
 from gui.registro_cliente import VentanaRegistrarCliente
 from gui.registro_habitacion import RegistroHabitacion
 from gui.registro_reserva import RegistroReserva
+from services.gestorCliente import GestorCliente
+import sqlite3
+from database.conexion import DbSingleton
 
 def main():
-    # Crear la base de datos y las tablas si no existen
-    crear_tablas()
+    # Establecer la conexion con la bd creando el objeto conexion
+    db = DbSingleton()
+    
 
     root = tk.Tk()
     root.title("Sistema de Gestión de Hotel")
@@ -34,7 +38,15 @@ def main():
                command=lambda: RegistroHabitacion(tk.Toplevel(root))).pack(pady=10)
     ttk.Button(root, text="Registrar Reserva", style="RoundedButton.TButton",
                command=lambda: RegistroReserva(tk.Toplevel(root))).pack(pady=10)
-
+    
+    
+    gestorCliente = GestorCliente()
+    gestorCliente.registrarCliente("Juan", "Perez", "Direccion", "12345678", "email")
+    cliente = gestorCliente.getClienteById(1)
+    print(cliente)
+    
+    
+    
     root.mainloop()
 
 if __name__ == "__main__":
