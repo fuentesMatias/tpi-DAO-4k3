@@ -6,6 +6,7 @@ from gui.registro_habitacion import RegistroHabitacion
 from gui.registro_reserva import RegistroReserva
 from gui.finalizar_estadia import FinalizarEstadia
 from services.gestorCliente import GestorCliente
+from services.gestorHabitaciones import GestorHabitaciones
 
 def main():
     # Establecer la conexión con la base de datos
@@ -41,6 +42,9 @@ def main():
                command=lambda: FinalizarEstadia(tk.Toplevel(root))).pack(pady=10)
 
 
+    
+    
+    
     root.mainloop()
 
 if __name__ == "__main__":

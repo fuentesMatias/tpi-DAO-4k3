@@ -1,14 +1,17 @@
 from database.conexion import DbSingleton
 from datetime import date
 from models.reserva import Reserva
+from services.gestorHabitaciones import GestorHabitaciones
+from services.gestorCliente import GestorCliente
+
 
 
 class GestorReserva:
     def __init__(self):
-        self._reservas = []
-        self._clientes = []
-        self._habitaciones = []
         self._db = DbSingleton()
+        self.gestorHabitaciones = GestorHabitaciones()
+        self.gestorClientes = GestorCliente()
+        
 
     def getReservas(self):
         return self._reservas
@@ -21,24 +24,36 @@ class GestorReserva:
 
     def agregarReserva(self, res):
         self._reservas.append(res)
+        
 
-    def registrarReserva(
-        self, idHabitacion, idCliente, fechaEntrada, fechaSalida, cantPersonas
-    ):
-        hab = list(filter(lambda x: x.id == idHabitacion, self.getHabitaciones()))
-        cliente = list(filter(lambda x: x.id == idCliente, self.getClientes()))
-        hab.ocupar()
-        ultimoId = self._db.fetch_query(
-            "SELECT * from reservas ORDER BY id desc LIMIT 1"
-        )[0]
-        reserva = Reserva(
-            ultimoId, cliente, hab, fechaEntrada, fechaSalida, cantPersonas
-        )
-        self.agregarReserva(reserva)
-        self._db.execute_query(
-            "INSERT INTO reservas(id_cliente, id_habitacion, fecha_entrada, fecha_salida, personas) VALUES (?, ?, ?, ?, ?)",
-            (idCliente, idHabitacion, fechaEntrada, fechaSalida, cantPersonas),
-        )
+    def registrarReserva(self, idHabitacion, idCliente, fechaEntrada, fechaSalida, cantPersonas):
+        # validar que el id de la habitacion y el id del cliente existan con try except
+        try:
+            habitacion = self.gestorHabitaciones.getHabitacion(idHabitacion)
+            print(habitacion)
+            cliente = self.gestorClientes.getClienteById(idCliente)
+        except:
+            print("No se pudo registrar la reserva")
+            return
+        
+        # validar que la habitacion este disponible
+        if habitacion.getEstado() != "disponible":
+            print("La habitacion no esta disponible")
+            print(habitacion.getEstado())
+            return
+        
+        # validar que la fecha de entrada sea menor a la fecha de salida
+        if fechaEntrada >= fechaSalida:
+            print("La fecha de entrada debe ser menor a la fecha de salida")
+            # retornar una excepcion
+            raise Exception("La fecha de entrada debe ser menor a la fecha de salida")
+
+        
+        # guardar la reserva en la base de datos
+        query = "INSERT INTO reservas (id_habitacion, id_cliente, fecha_entrada, fecha_salida, personas) VALUES (?, ?, ?, ?, ?)"
+        self._db.execute_query(query, (idHabitacion, idCliente, fechaEntrada, fechaSalida, cantPersonas))
+        self._db.commit()
+        
     
     def getReservasByClienteId(self, id_cliente):
         query = "SELECT * FROM reservas WHERE id_cliente = ?"

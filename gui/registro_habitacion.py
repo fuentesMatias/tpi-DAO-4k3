@@ -14,7 +14,7 @@ class RegistroHabitacion:
         self.numero_entry.grid(row=0, column=1, padx=5, pady=5)
 
         tk.Label(root, text="Tipo").grid(row=1, column=0, padx=5, pady=5)
-        self.tipo_selector = ttk.Combobox(root, values=["Simple", "Doble", "Suite"])
+        self.tipo_selector = ttk.Combobox(root, values=["simple", "doble", "suite"])
         self.tipo_selector.grid(row=1, column=1, padx=5, pady=5)
         self.tipo_selector.state(['readonly'])
 
