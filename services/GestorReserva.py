@@ -3,6 +3,7 @@ from datetime import date
 from models.reserva import Reserva
 from services.gestorHabitaciones import GestorHabitaciones
 from services.gestorCliente import GestorCliente
+from datetime import datetime
 
 
 
@@ -58,4 +59,37 @@ class GestorReserva:
     def getReservasByClienteId(self, id_cliente):
         query = "SELECT * FROM reservas WHERE id_cliente = ?"
         reservas_data = self._db.fetch_query(query, (id_cliente,))
-        return reservas_data
+        # Crear objetos Reserva con los datos obtenidos
+        reservas = [Reserva(*data) for data in reservas_data]
+        return reservas
+    
+    def getReservaById(self, id_reserva):
+        query = "SELECT * FROM reservas WHERE id = ?"
+        reserva_data = self._db.fetch_query(query, (id_reserva,))
+        if reserva_data:
+            data = reserva_data[0]
+            reserva = Reserva(*data)
+            return reserva
+        else:
+            print(f"No se encontró ninguna reserva con ID {id_reserva}")
+            return None
+    
+    
+    def calcularTotalReserva(self, id_reserva):
+        # Buscar la reserva y la habitación asociada
+        reserva = self.getReservaById(id_reserva)
+        habitacion = self.gestorHabitaciones.getHabitacion(reserva.getHabitacion())
+        
+        # Convertir las fechas de entrada y salida a objetos datetime si son cadenas
+        fecha_entrada = reserva.getFechaEntrada()
+        fecha_salida = reserva.getFechaSalida()
+        
+        if isinstance(fecha_entrada, str):
+            fecha_entrada = datetime.strptime(fecha_entrada, "%Y-%m-%d").date()  # Ajusta el formato según tu caso
+        if isinstance(fecha_salida, str):
+            fecha_salida = datetime.strptime(fecha_salida, "%Y-%m-%d").date()  # Ajusta el formato según tu caso
+
+        # Calcular el total multiplicando los días de estancia por el precio por noche
+        dias = (fecha_salida - fecha_entrada).days
+        total = dias * habitacion.getPrecioPorNoche()
+        return total

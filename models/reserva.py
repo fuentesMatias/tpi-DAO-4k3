@@ -7,7 +7,8 @@ class Reserva:
         self._habitacion = habitacion
         self._fechaEntrada = fechaEntrada
         self._fechaSalida = fechaSalida
-        self._cantPersonas = cantPersonas
+        self._cantPersonas = cantPersonas        
+
 
     def getId(self):
         return self._id

@@ -8,6 +8,11 @@ from gui.finalizar_estadia import FinalizarEstadia
 from services.gestorCliente import GestorCliente
 from services.gestorHabitaciones import GestorHabitaciones
 
+def abrir_ventana(ventana_clase, root):
+    ventana = tk.Toplevel(root)
+    instancia = ventana_clase(ventana)
+    ventana.protocol("WM_DELETE_WINDOW", ventana.destroy)  # Destruye completamente al cerrarse
+
 def main():
     # Establecer la conexión con la base de datos
     db = DbSingleton()
@@ -33,18 +38,14 @@ def main():
 
     # Botones principales
     ttk.Button(root, text="Registrar Cliente", style="RoundedButton.TButton",
-               command=lambda: VentanaRegistrarCliente(tk.Toplevel(root))).pack(pady=10)
+               command=lambda: abrir_ventana(VentanaRegistrarCliente, root)).pack(pady=10)
     ttk.Button(root, text="Registrar Habitación", style="RoundedButton.TButton",
-               command=lambda: RegistroHabitacion(tk.Toplevel(root))).pack(pady=10)
+               command=lambda: abrir_ventana(RegistroHabitacion, root)).pack(pady=10)
     ttk.Button(root, text="Registrar Reserva", style="RoundedButton.TButton",
-               command=lambda: RegistroReserva(tk.Toplevel(root))).pack(pady=10)
+               command=lambda: abrir_ventana(RegistroReserva, root)).pack(pady=10)
     ttk.Button(root, text="Finalizar Estadia", style="RoundedButton.TButton",
-               command=lambda: FinalizarEstadia(tk.Toplevel(root))).pack(pady=10)
+               command=lambda: abrir_ventana(FinalizarEstadia, root)).pack(pady=10)
 
-
-    
-    
-    
     root.mainloop()
 
 if __name__ == "__main__":
