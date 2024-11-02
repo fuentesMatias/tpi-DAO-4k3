@@ -23,10 +23,8 @@ class GestorHabitaciones():
 
     def getHabitacion(self, id):
         habitacion_data = self._db.fetch_query(f"SELECT * FROM habitaciones WHERE id = {id}")
-        print(habitacion_data)
         if habitacion_data:
             data = habitacion_data[0]
-            print(data)
             hab = Habitacion(*data)
             return hab
         else:
@@ -39,7 +37,6 @@ class GestorHabitaciones():
     # get habitaciones disponibles
     def getHabitacionesDisponibles(self):
         habitaciones_data = self._db.fetch_query("SELECT * FROM habitaciones WHERE estado = 'disponible'")
-        print(habitaciones_data[0])
         habitacionesDispobibles = [Habitacion(*data) for data in habitaciones_data]
         return habitacionesDispobibles
     

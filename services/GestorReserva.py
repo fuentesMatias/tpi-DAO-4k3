@@ -15,7 +15,14 @@ class GestorReserva:
         
 
     def getReservas(self):
-        return self._reservas
+        try:
+            query = "SELECT * FROM reservas"
+            reservas_data = self._db.fetch_query(query)
+            reservas = [Reserva(*data) for data in reservas_data]
+            return reservas
+        except:
+            print("No se pudieron obtener las reservas")
+            return 
 
     def getClientes(self):
         return self._clientes
@@ -93,3 +100,14 @@ class GestorReserva:
         dias = (fecha_salida - fecha_entrada).days
         total = dias * habitacion.getPrecioPorNoche()
         return total
+
+    def getHabitacionesDisponibles(self,fecha_entrada, fecha_salida):
+        # Obtener todas las habitaciones
+        habitaciones = self.gestorHabitaciones.getHabitaciones()
+        # Obtener las reservas que se solapan con las fechas de entrada y salida
+        reservas = self.getReservas()
+        for reserva in reservas:
+            if fecha_entrada <= reserva.getFechaSalida() and fecha_salida >= reserva.getFechaEntrada():
+                # Si las fechas se solapan, la habitación no está disponible, eliminar de la lista de habitaciones comparandos los ids
+                habitaciones = [hab for hab in habitaciones if hab.getId() != reserva.getHabitacion()]
+        return habitaciones
