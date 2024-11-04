@@ -1,5 +1,4 @@
-from persona import Persona
-
+from models.persona import Persona
 
 class Empleado(Persona):
     def __init__(self, id, nombre, apellido, cargo, sueldo):

@@ -48,3 +48,23 @@ CREATE TABLE IF NOT EXISTS empleados (
     cargo TEXT CHECK (cargo IN ('recepcionista', 'servicio de limpieza', 'gerente', 'mantenimiento')) NOT NULL,
     sueldo REAL NOT NULL
 );
+
+-- Tabla de asignaciones
+CREATE TABLE IF NOT EXISTS asignaciones (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_empleado INTEGER NOT NULL,
+    id_habitacion INTEGER NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    FOREIGN KEY (id_empleado) REFERENCES empleados(id),
+    FOREIGN KEY (id_habitacion) REFERENCES habitaciones(id)
+);
+
+-- Cargar datos en empleados --
+
+-- INSERT INTO empleados (nombre, apellido, cargo, sueldo) VALUES
+-- ('Matias', 'Fuentes', 'gerente', 50000),
+-- ('Lautaro', 'Gregorat', 'recepcionista', 30000),
+-- ('Federico', 'Mizzau', 'servicio de limpieza', 25000),
+-- ('Ana', 'Martinez', 'servicio de limpieza', 25000),
+-- ('Luis', 'Hernandez', 'servicio de limpieza', 25000);

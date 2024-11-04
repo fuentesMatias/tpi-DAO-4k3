@@ -110,4 +110,5 @@ class GestorReserva:
             if fecha_entrada <= reserva.getFechaSalida() and fecha_salida >= reserva.getFechaEntrada():
                 # Si las fechas se solapan, la habitación no está disponible, eliminar de la lista de habitaciones comparandos los ids
                 habitaciones = [hab for hab in habitaciones if hab.getId() != reserva.getHabitacion()]
+        print(f"Reservas: f{reservas} \nHabitaciones: {habitaciones}")
         return habitaciones

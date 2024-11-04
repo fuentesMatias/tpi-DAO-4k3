@@ -1,11 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
-from database.conexion import DbSingleton
+# from database.conexion import DbSingleton
 from services.gestorCliente import GestorCliente
 from services.gestorHabitaciones import GestorHabitaciones
-from services.gestorReserva import GestorReserva
-
+from services.GestorReserva import GestorReserva
 
 class RegistroReserva:
     def __init__(self, root):
@@ -91,7 +90,7 @@ class RegistroReserva:
         # Lógica para cargar habitaciones disponibles desde gestorHabitaciones
         gestorReserva = GestorReserva()
         habitaciones_disponibles = gestorReserva.getHabitacionesDisponibles(fecha_entrada, fecha_salida)
-        
+
         if habitaciones_disponibles:
             self.habitacion_combobox['values'] = [f"{habitacion.getId()} - Nro: {habitacion.getNumero()} - {habitacion.getTipo()}" for habitacion in habitaciones_disponibles]
         else:
