@@ -68,7 +68,7 @@ class GestorPDF:
         elements.append(Paragraph(title, styles['Title']))
         elements.append(Spacer(1, 0.2 * inch))
         # Encabezado de la tabla
-        data = [["Habitación", "Ingresos"]]
+        data = [["Habitación", "Tipo", "Ingresos"]]
         # Agregar reservas filtradas a la tabla
         habitaciones = self.gestorHabitaciones.getHabitaciones()
         # por cada habitacion traigo sus reservas usando el gestor de reservas y por cada reserva traigo todas sus facturas y sumo el total
@@ -79,7 +79,7 @@ class GestorPDF:
                 facturas = self.gestorFactura.getFacturasByReserva(reserva.getId())
                 for factura in facturas:
                     total += factura.getTotal()
-            data.append([habitacion.getNumero(), total])
+            data.append([habitacion.getNumero(), habitacion.getTipo(), total])
         
         t = Table(data)
         t.setStyle(TableStyle([

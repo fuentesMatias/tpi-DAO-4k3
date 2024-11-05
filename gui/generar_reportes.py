@@ -12,7 +12,7 @@ class VentanaGenerarReportes:
 
         # Botones principales en la ventana principal
         tk.Button(root, text="Listar Reservas en Periodo", command=self.open_reservas_window).pack(pady=10)
-        tk.Button(root, text="Reporte de Ingresos", command=self.open_ingresos_window).pack(pady=10)
+        tk.Button(root, text="Reporte de Ingresos", command=self.gestorPdf.generar_pdf_ingresos).pack(pady=10)
         tk.Button(root, text="Reporte de Ocupación Promedio", command=self.open_ocupacion_window).pack(pady=10)
 
     def open_reservas_window(self):
@@ -42,20 +42,6 @@ class VentanaGenerarReportes:
 
             # Botón para ejecutar la función listar_reservas
             tk.Button(reservas_window, text="Listar", command=listar_reservas).pack(pady=10)
-
-    def open_ingresos_window(self):
-        ingresos_window = tk.Toplevel(self.root)
-        ingresos_window.title("Reporte de Ingresos")
-        tk.Label(ingresos_window, text="Periodo de tiempo (YYYY-MM-DD a YYYY-MM-DD):").pack(pady=5)
-        periodo_entry = tk.Entry(ingresos_window)
-        periodo_entry.pack(pady=5)
-        
-        def generar_reporte_ingresos():
-            self.gestorPdf.generar_pdf_ingresos()
-            # Lógica para generar el reporte de ingresos
-            messagebox.showinfo("Reporte de Ingresos", f"Generando reporte de ingresos para el periodo: {periodo}")
-        
-        tk.Button(ingresos_window, text="Generar", command=generar_reporte_ingresos).pack(pady=10)
 
     def open_ocupacion_window(self):
         ocupacion_window = tk.Toplevel(self.root)

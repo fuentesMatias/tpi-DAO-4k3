@@ -1,8 +1,8 @@
 from database.conexion import DbSingleton
+from models.factura import Factura
 from services.gestorCliente import GestorCliente
 from services.gestorReserva import GestorReserva
 import datetime
-import models.factura as Factura
 
 
 class gestorFactura:
@@ -13,7 +13,6 @@ class gestorFactura:
         
     def getFacturas(self):
         pass
-    
     
     def registrarFactura(self,idCliente,idReserva):
         # validar que el id del cliente y el id de la reserva existan con try except
@@ -38,6 +37,6 @@ class gestorFactura:
         
     def getFacturasByReserva(self, idReserva):
         query = "SELECT * FROM facturas WHERE id_reserva = ?"
-        facturas_data = self._db.fetch_query(query, (idReserva))
+        facturas_data = self._db.fetch_query(query, (idReserva,))
         facturas = [Factura(*data) for data in facturas_data]
         return facturas
