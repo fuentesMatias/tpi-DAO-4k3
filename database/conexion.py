@@ -42,6 +42,7 @@ class DbSingleton:
             self.test_connection()
             self.cursor.execute(query, params)
         except Error as e:
+            raise e
             print(f"Error al intentar ejecutar la consulta: {e}")
 
     def fetch_query(self, query, parameters=()):
@@ -51,7 +52,7 @@ class DbSingleton:
             return self.cursor.fetchall()
         except Error as e:
             print(f"Error al intentar obtener datos: {e}")
-            return None
+            raise e
 
     def close_connection(self):
         if self.connection:

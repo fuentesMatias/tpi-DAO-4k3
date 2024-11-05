@@ -25,7 +25,7 @@ class gestorFactura:
             return
         
         # calcular el total
-        precioTotal = GestorReserva.calcularTotalReserva(reserva.getId())
+        precioTotal = self.gestorReservas.calcularTotalReserva(reserva.getId())
         
         # obtener la fecha de emision
         fecha_emision = datetime.date.today()

@@ -35,4 +35,5 @@ class Asignacion:
         return self.getFecha() == date.today()
 
     def __str__(self) -> str:
-        return f"ID Asignacion: {str(self.getId())} | Empleado: {str(self.getEmpleado())} | Habitacion: {str(self.getHabitacion())} | Fecha: {self.getFecha()} | Activa: {"SI" if self.estaActiva() else "NO"}"
+        return f"ID Asignacion: {str(self.getId())} | Empleado: {str(self.getEmpleado())} | Habitacion: {str(self.getHabitacion())} | Fecha: {self.getFecha()} | Activa: {'SI' if self.estaActiva() else 'NO'}"
+
