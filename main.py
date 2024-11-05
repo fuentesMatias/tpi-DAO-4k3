@@ -34,10 +34,10 @@ def main():
     # Crear ventana principal
     root = tk.Tk()
     root.title("Sistema de Gestión de Hotel")
-    root.geometry("600x450")
+    root.geometry("1200x750")
     root.configure(background="#b3e5fc")
 
-    centrar_ventana(root, 600, 450)
+    centrar_ventana(root, 1200, 750)
 
     # Agregar ícono a la ventana
     root.iconphoto(False, tk.PhotoImage(file="./assets/hotel.png"))
@@ -45,7 +45,7 @@ def main():
     imagen_fondo = Image.open(
         "./assets/hotel_bg.jpg"
     )  # Reemplaza con tu imagen de fondo
-    imagen_fondo = imagen_fondo.resize((700, 500))  # Ajusta tamaño a la ventana
+    imagen_fondo = imagen_fondo.resize((1200, 750))  # Ajusta tamaño a la ventana
     bg_image = ImageTk.PhotoImage(imagen_fondo)
 
     # Configurar un Label para mostrar la imagen de fondo

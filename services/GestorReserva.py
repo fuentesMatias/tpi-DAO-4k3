@@ -136,7 +136,7 @@ class GestorReserva:
         # Determinar que reservas se encuentran en curso
         reservas_futuras = [
             reserva for reserva in reservas
-            if datetime.strptime(reserva._fechaEntrada, "%Y-%m-%d").date() <= fechaActual <= datetime.strptime(reserva._fechaSalida, "%Y-%m-%d").date() 
+            if datetime.strptime(reserva.getFechaEntrada(), "%Y-%m-%d").date() <= fechaActual <= datetime.strptime(reserva.getFechaSalida(), "%Y-%m-%d").date() 
         ]
         
         return reservas_futuras
@@ -147,4 +147,6 @@ class GestorReserva:
         # habitacionesOcupadas = [hab for hab in habitaciones if hab.getEstado() == "ocupada"]
         # cuento reservas por tipo de habitacion
         habitacionesOcupadas = [reserva for reserva in reservasFuturas if reserva.getHabitacion() in [hab.getId() for hab in habitaciones]]
+        if len(habitaciones) == 0:
+            return "No hay habitaciones de ese tipo"
         return len(habitacionesOcupadas) / len(habitaciones) * 100

@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkcalendar import DateEntry
 from services.gestorEmpleado import GestorEmpleado
 from services.gestorHabitaciones import GestorHabitaciones
 from services.gestorAsignacion import GestorAsignacion
-from datetime import date, datetime
+from datetime import datetime
 
 class VentanaAsignarEmpleadoAHabitacion:
     def __init__(self, root):
@@ -25,43 +26,46 @@ class VentanaAsignarEmpleadoAHabitacion:
         self.selected_habitacion = None
 
         # Widgets
-        tk.Label(root, text="Seleccionar Empleado:").grid(row=0, column=0, padx=10, pady=10)
+        tk.Label(root, text="Fecha de Asignación:").grid(row=0, column=0, padx=10, pady=10)
+        self.fecha_entry = DateEntry(root, date_pattern="yyyy-MM-dd", width=47)
+        self.fecha_entry.grid(row=0, column=1, padx=10, pady=10)
+        self.fecha_entry.bind("<<DateEntrySelected>>", self.cargar_habitaciones_disponibles)
+
+        tk.Label(root, text="Seleccionar Empleado:").grid(row=1, column=0, padx=10, pady=10)
         self.empleado_var = tk.StringVar()
         self.empleado_combobox = ttk.Combobox(root, textvariable=self.empleado_var, width=50, state='readonly')
-        self.empleado_combobox.grid(row=0, column=1, padx=10, pady=10)
-        self.empleado_combobox.bind("<<ComboboxSelected>>", self.cargar_habitaciones)
+        self.empleado_combobox.grid(row=1, column=1, padx=10, pady=10)
+        self.empleado_combobox.bind("<<ComboboxSelected>>", self.cargar_habitaciones_disponibles)
 
-        tk.Label(root, text="Seleccionar Habitación:").grid(row=1, column=0, padx=10, pady=10)
+        tk.Label(root, text="Seleccionar Habitación:").grid(row=2, column=0, padx=10, pady=10)
         self.habitacion_var = tk.StringVar()
         self.habitacion_combobox = ttk.Combobox(root, textvariable=self.habitacion_var, width=50, state='readonly')
-        self.habitacion_combobox.grid(row=1, column=1, padx=10, pady=10)
-
-        # Etiqueta y entrada para la fecha de asignación
-        tk.Label(root, text="Fecha (YYYY-MM-DD):").grid(row=2, column=0, padx=10, pady=10)
-        self.fecha_entry = tk.Entry(root)
-        self.fecha_entry.grid(row=2, column=1, padx=10, pady=10)
+        self.habitacion_combobox.grid(row=2, column=1, padx=10, pady=10)
 
         self.gestorAsignacion.cargarAsignaciones()
         self.gestorAsignacion.getAsignaciones()
 
         # Botón para asignar
-        ttk.Button(root, text="Asignar", command=self.asignar_empleado).grid(row=4, column=1, pady=15)
+        ttk.Button(root, text="Asignar", command=self.asignar_empleado).grid(row=3, column=1, pady=15)
 
         # Cargar empleados en el combobox inicialmente
         self.actualizar_combobox(self.empleado_combobox, self.empleados)
 
-    def cargar_habitaciones(self, event):
-        """Carga las habitaciones disponibles en el combobox cuando se selecciona un empleado."""
-        empleado_seleccionado = self.empleado_combobox.get()
-        self.selected_empleado = next(
-            (emp for emp in self.empleados if f"{emp.getNombre()} {emp.getApellido()}" == empleado_seleccionado),
-            None,
-        )
-
-        if self.selected_empleado:
-            # Solo cargar habitaciones si hay un empleado seleccionado
-            self.actualizar_combobox(self.habitacion_combobox, self.habitaciones)
-
+    def cargar_habitaciones_disponibles(self, event=None):
+        """Carga las habitaciones disponibles en el combobox según la fecha seleccionada."""
+        fecha_seleccionada_str = self.fecha_entry.get()
+        try:
+            # Convertir la fecha seleccionada a formato de fecha
+            fecha_seleccionada = datetime.strptime(fecha_seleccionada_str, "%Y-%m-%d").date()
+            
+            # Filtrar habitaciones disponibles en la fecha seleccionada
+            habitaciones_disponibles = self.gestorAsignacion.getHabitacionesParaAsignar(fecha_seleccionada)
+            
+            # Actualizar el combobox de habitaciones con las habitaciones disponibles
+            self.actualizar_combobox(self.habitacion_combobox, habitaciones_disponibles)
+        except ValueError:
+            messagebox.showerror("Error", "Formato de fecha incorrecto.")
+    
     def actualizar_combobox(self, combobox, lista):
         """Actualiza las opciones del combobox."""
         if isinstance(lista, list):
@@ -83,11 +87,10 @@ class VentanaAsignarEmpleadoAHabitacion:
             emp.getId() for emp in self.empleados if f"{emp.getNombre()} {emp.getApellido()}" == empleado_seleccionado
         )
 
-        fecha_str = self.fecha_entry.get().strip()
-
-        # Validación y conversión de fechas
+        # Obtener la fecha seleccionada en formato de `DateEntry`
+        fecha_str = self.fecha_entry.get()
         try:
-            # Validar y convertir la fecha ingresada
+            # Validar y convertir la fecha obtenida del `DateEntry`
             fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
 
             # Llamada al gestor para registrar la asignación
@@ -100,7 +103,7 @@ class VentanaAsignarEmpleadoAHabitacion:
             self.root.destroy()
 
         except ValueError:
-            messagebox.showerror("Error", "Formato de fecha incorrecto. Use YYYY-MM-DD.")
+            messagebox.showerror("Error", "Formato de fecha incorrecto.")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo realizar la asignación: {str(e)}")
 
