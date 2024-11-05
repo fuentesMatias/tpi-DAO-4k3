@@ -99,6 +99,7 @@ class FinalizarEstadia:
         selected_item = self.reservas_tree.focus()
         if selected_item:
             self.selected_reserva = self.reserva_objs[int(selected_item)]  # Obtener el objeto `Reserva` completo
+            print(self.selected_reserva)
 
     def emitir_factura(self):
         """Genera la factura para la reserva seleccionada."""

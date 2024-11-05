@@ -7,7 +7,7 @@ class RegistroHabitacion:
     def __init__(self, root):
         self.root = root
         self.root.title("Registro de Habitación")
-
+        self.gestorHabitacion = GestorHabitaciones()
         # Crear los widgets
         tk.Label(root, text="Número").grid(row=0, column=0, padx=5, pady=5)
         self.numero_entry = tk.Entry(root)
@@ -55,14 +55,10 @@ class RegistroHabitacion:
         precio = self.precio_entry.get()
 
         try:
-            gestorHabitacion = GestorHabitaciones()
-            gestorHabitacion.registrarHabitacion(numero, tipo, precio)
+            self.gestorHabitacion.registrarHabitacion(numero, tipo, precio)
         except Exception as e:
-            print(f"Error al registrar habitación: {e}")
             messagebox.showerror("Error", f"No se pudo registrar la habitación: {e}")
             return
-
-        print(f"Habitación {numero} registrada con éxito")
         messagebox.showinfo("Éxito", f"Habitación {numero} registrada con éxito")
         self.limpiar_campos()
 

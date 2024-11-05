@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from services.gestorEmpleado import GestorEmpleado
 from services.gestorHabitaciones import GestorHabitaciones
 from services.gestorAsignacion import GestorAsignacion
-from datetime import datetime
+from datetime import date, datetime
 
 class VentanaAsignarEmpleadoAHabitacion:
     def __init__(self, root):
@@ -36,14 +36,13 @@ class VentanaAsignarEmpleadoAHabitacion:
         self.habitacion_combobox = ttk.Combobox(root, textvariable=self.habitacion_var, width=50, state='readonly')
         self.habitacion_combobox.grid(row=1, column=1, padx=10, pady=10)
 
-        # Etiquetas y entradas para fecha de inicio y fecha de fin
-        tk.Label(root, text="Fecha de Inicio (YYYY-MM-DD):").grid(row=2, column=0, padx=10, pady=10)
-        self.fecha_inicio_entry = tk.Entry(root)
-        self.fecha_inicio_entry.grid(row=2, column=1, padx=10, pady=10)
+        # Etiqueta y entrada para la fecha de asignación
+        tk.Label(root, text="Fecha (YYYY-MM-DD):").grid(row=2, column=0, padx=10, pady=10)
+        self.fecha_entry = tk.Entry(root)
+        self.fecha_entry.grid(row=2, column=1, padx=10, pady=10)
 
-        tk.Label(root, text="Fecha de Fin (YYYY-MM-DD) (opcional):").grid(row=3, column=0, padx=10, pady=10)
-        self.fecha_fin_entry = tk.Entry(root)
-        self.fecha_fin_entry.grid(row=3, column=1, padx=10, pady=10)
+        self.gestorAsignacion.cargarAsignaciones()
+        self.gestorAsignacion.getAsignaciones()
 
         # Botón para asignar
         ttk.Button(root, text="Asignar", command=self.asignar_empleado).grid(row=4, column=1, pady=15)
@@ -84,22 +83,18 @@ class VentanaAsignarEmpleadoAHabitacion:
             emp.getId() for emp in self.empleados if f"{emp.getNombre()} {emp.getApellido()}" == empleado_seleccionado
         )
 
-        fecha_inicio_str = self.fecha_inicio_entry.get().strip()
-        fecha_fin_str = self.fecha_fin_entry.get().strip()
+        fecha_str = self.fecha_entry.get().strip()
 
         # Validación y conversión de fechas
         try:
-            fecha_inicio = datetime.strptime(fecha_inicio_str, "%Y-%m-%d").date()
-            fecha_fin = None
-            if fecha_fin_str:
-                fecha_fin = datetime.strptime(fecha_fin_str, "%Y-%m-%d").date()
+            # Validar y convertir la fecha ingresada
+            fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
 
             # Llamada al gestor para registrar la asignación
             self.gestorAsignacion.registrarAsignacion(
                 int(habitacion_seleccionada),
                 int(empleado_id),
-                fecha_inicio,
-                fecha_fin,
+                fecha,
             )
             messagebox.showinfo("Éxito", "Asignación registrada correctamente.")
             self.root.destroy()

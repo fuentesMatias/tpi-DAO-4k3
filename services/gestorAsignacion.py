@@ -17,7 +17,7 @@ class GestorAsignacion:
 
     def getAsignaciones(self):
         return self._asignaciones
-    
+
     def getHabitaciones(self):
         return self._habitaciones
 
@@ -29,10 +29,10 @@ class GestorAsignacion:
 
             print(f"asignaciones: {asignaciones_data}")
             for data in asignaciones_data:
-                id, idEmpleado, idHabitacion, fechaInicio, fechaFin = data
+                id, idEmpleado, idHabitacion, fecha = data
                 empleado = self.gestorEmpleados.getEmpleadoById(idEmpleado)
                 habitacion = self.gestorHabitaciones.getHabitacion(idHabitacion)
-                asignacion = Asignacion(id, empleado, habitacion, fechaInicio, fechaFin)
+                asignacion = Asignacion(id, empleado, habitacion, fecha)
                 asignaciones.append(asignacion)
 
             self._asignaciones = asignaciones
@@ -40,7 +40,7 @@ class GestorAsignacion:
             print("No se pudieron cargar las asignaciones")
             return
 
-    def registrarAsignacion(self, idHabitacion, idEmpleado, fechaInicio, fechaFin=None):
+    def registrarAsignacion(self, idHabitacion, idEmpleado, fecha):
         # validar que el id de la habitacion y el id del empleado existan con try except
         try:
             habitacion = self.gestorHabitaciones.getHabitacion(idHabitacion)
@@ -49,29 +49,25 @@ class GestorAsignacion:
         except:
             print("No se pudo asignar la habitacion al empleado")
             return
-        
+
         # ESTE IF ES EL QUE NO ANDA
-        #validar que la habitacion no este asignada
-        if any(hab.getId() == idHabitacion for hab in self.getHabitacionesParaAsignar()):
+        # validar que la habitacion no este asignada
+        if not any(
+            hab.getId() == idHabitacion for hab in self.getHabitacionesParaAsignar()
+        ):
             print(f"La habitacion {idHabitacion} ya esta asignada")
             raise Exception("La habitacion ya se encuentra asignada")
 
         # validar que el empleado no tenga mas de 5 asignaciones
         asignacionesDelEmpleado = self.getAsignacionesActivasByEmpleado(idEmpleado)
 
-        if (len(asignacionesDelEmpleado) > 5):
+        if len(asignacionesDelEmpleado) > 5:
             print(f"El empleado debe tener menos de 5 asignaciones activas")
             raise Exception("El empleado debe tener menos de 5 asignaciones activas")
 
-        # validar que la fecha de inicio sea menor a la fecha de fin
-        if not (fechaFin is None) and fechaInicio >= fechaFin:
-            print("La fecha de inicio debe ser menor a la fecha de fin")
-            # retornar una excepcion
-            raise Exception("La fecha de inicio debe ser menor a la fecha de fin")
-
         # guardar la asignacion
-        query = "INSERT INTO asignaciones (id_empleado, id_habitacion, fecha_inicio, fecha_fin) VALUES (?, ?, ?, ?)"
-        self._db.execute_query(query, (idEmpleado, idHabitacion, fechaInicio, fechaFin))
+        query = "INSERT INTO asignaciones (id_empleado, id_habitacion, fecha) VALUES (?, ?, ?)"
+        self._db.execute_query(query, (idEmpleado, idHabitacion, fecha))
         self._db.commit()
 
     def getAsignacionesActivasByEmpleado(self, idEmpleado):
@@ -88,17 +84,23 @@ class GestorAsignacion:
         asignacionesDelEmpleado = [
             asign for asign in asignaciones if asign.getEmpleado().getId() == idEmpleado
         ]
-        asignacionesActivas = [asign for asign in asignacionesDelEmpleado if asign.estaActiva()]
+        asignacionesActivas = [
+            asign for asign in asignacionesDelEmpleado if asign.estaActiva()
+        ]
 
         return asignacionesActivas
-    
+
     def getHabitacionesParaAsignar(self):
-            habitaciones = self.getHabitaciones()
-            asignaciones = self.getAsignaciones()
-            # Obtener las asignaciones entre las fechas establecidas
-            for asign in asignaciones:
-                if asign.estaActiva():
-                    # Si la asignacion está activa, eliminar la habitacion
-                    habitaciones = [hab for hab in habitaciones if hab.getId() != asign.getHabitacion().getId()]
-            print(f"Asignaciones: {asignaciones} \nHabitaciones: {habitaciones}")
-            return habitaciones
+        habitaciones = self.getHabitaciones()
+        asignaciones = self.getAsignaciones()
+        # Obtener las asignaciones entre las fechas establecidas
+        for asign in asignaciones:
+            if asign.estaActiva():
+                # Si la asignacion está activa, eliminar la habitacion
+                habitaciones = [
+                    hab
+                    for hab in habitaciones
+                    if hab.getId() != asign.getHabitacion().getId()
+                ]
+        print(f"Asignaciones: {asignaciones} \nHabitaciones: {habitaciones}")
+        return habitaciones

@@ -1,10 +1,11 @@
+from datetime import date
+
 class Asignacion:
-    def __init__(self, id, empleado, habitacion, fechaInicio, fechaFin=None):
+    def __init__(self, id, empleado, habitacion, fecha):
         self._id = id
         self._empleado = empleado
         self._habitacion = habitacion
-        self._fechaInicio = fechaInicio
-        self._fechaFin = fechaFin
+        self._fecha = fecha
 
     def getId(self):
         return self._id
@@ -15,11 +16,8 @@ class Asignacion:
     def getHabitacion(self):
         return self._habitacion
 
-    def getFechaInicio(self):
-        return self._fechaInicio
-
-    def getFechaFin(self):
-        return self._fechaFin
+    def getFecha(self):
+        return self._fecha
 
     def setId(self, id):
         self._id = id
@@ -30,14 +28,12 @@ class Asignacion:
     def setHabitacion(self, hab):
         self._habitacion = hab
 
-    def setFechaInicio(self, fecha):
-        self._fechaInicio = fecha
-
-    def setFechaFin(self, fecha):
-        self._fechaFin = fecha
+    def setFecha(self, fecha):
+        self._fecha = fecha
 
     def estaActiva(self):
-        return self.getFechaFin() is None
+        return self.getFecha() == date.today()
 
     def __str__(self) -> str:
-        return f"ID Asignacion: {str(self.getId())} | Empleado: {str(self.getEmpleado())} | Habitacion: {str(self.getHabitacion())} | Fecha de Inicio: {self.getFechaInicio()} | Fecha de fin: {self.getFechaFin()}"
+        return f"ID Asignacion: {str(self.getId())} | Empleado: {str(self.getEmpleado())} | Habitacion: {str(self.getHabitacion())} | Fecha: {self.getFecha()} | Activa: {'SI' if self.estaActiva() else 'NO'}"
+

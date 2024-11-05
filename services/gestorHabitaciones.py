@@ -14,7 +14,11 @@ class GestorHabitaciones():
         return self._habitaciones
     
     def registrarHabitacion(self,numero, tipo, precioPorNoche):
-        self._db.execute_query("INSERT INTO Habitaciones (numero, tipo, precio) VALUES (?, ?, ?)", (numero, tipo, precioPorNoche))
+        try:
+            self._db.execute_query("INSERT INTO Habitaciones (numero, tipo, precio) VALUES (?, ?, ?)", (numero, tipo, precioPorNoche))
+        except Exception as e:
+            print(f"No se pudo registrar la habitación: {e}")
+            raise e
         self._db.commit()
 
     def actualizarHabitacion(self, id, tipo, precioPorNoche):
