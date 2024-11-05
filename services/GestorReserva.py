@@ -136,7 +136,7 @@ class GestorReserva:
         # Determinar que reservas se encuentran en curso
         reservas_futuras = [
             reserva for reserva in reservas
-            if datetime.strptime(reserva._fechaSalida, "%Y-%m-%d").date() <= fechaActual <= datetime.strptime(reserva._fechaSalida, "%Y-%m-%d").date() 
+            if datetime.strptime(reserva._fechaEntrada, "%Y-%m-%d").date() <= fechaActual <= datetime.strptime(reserva._fechaSalida, "%Y-%m-%d").date() 
         ]
         
         return reservas_futuras
