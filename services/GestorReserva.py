@@ -128,3 +128,23 @@ class GestorReserva:
         reservas_data = self._db.fetch_query(query, (id_habitacion,))
         reservas = [Reserva(*data) for data in reservas_data]
         return reservas
+    
+    def getReservasFuturas(self):
+        # Obtener la fecha actual
+        fechaActual = datetime.now().date()
+        reservas = self.getReservas()
+        # Determinar que reservas se encuentran en curso
+        reservas_futuras = [
+            reserva for reserva in reservas
+            if datetime.strptime(reserva._fechaEntrada, "%Y-%m-%d").date() <= fechaActual <= datetime.strptime(reserva._fechaSalida, "%Y-%m-%d").date() 
+        ]
+        
+        return reservas_futuras
+    
+    def porcentajeOcupacion(self, tipo):
+        habitaciones = self.gestorHabitaciones.getHabitacionByTipo(tipo)
+        reservasFuturas = self.getReservasFuturas()
+        # habitacionesOcupadas = [hab for hab in habitaciones if hab.getEstado() == "ocupada"]
+        # cuento reservas por tipo de habitacion
+        habitacionesOcupadas = [reserva for reserva in reservasFuturas if reserva.getHabitacion() in [hab.getId() for hab in habitaciones]]
+        return len(habitacionesOcupadas) / len(habitaciones) * 100

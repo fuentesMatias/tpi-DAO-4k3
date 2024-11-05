@@ -115,9 +115,9 @@ class GestorPDF:
         # Encabezado de la tabla
         data = [["Tipo", "Ocupación Promedio"]]
         # promedio de ocupacion habitacion tipo simple
-        promedioHabitacionesSimples = self.gestorHabitaciones.porcentajeOcupacion("simple")
-        promedioHabitacionesDobles = self.gestorHabitaciones.porcentajeOcupacion("doble")
-        promedioHabitacionesSuites = self.gestorHabitaciones.porcentajeOcupacion("suite")
+        promedioHabitacionesSimples = self.gestorReservas.porcentajeOcupacion("simple")
+        promedioHabitacionesDobles = self.gestorReservas.porcentajeOcupacion("doble")
+        promedioHabitacionesSuites = self.gestorReservas.porcentajeOcupacion("suite")
         data.append(["Simple", promedioHabitacionesSimples])
         data.append(["Doble", promedioHabitacionesDobles])
         data.append(["Suite", promedioHabitacionesSuites])
