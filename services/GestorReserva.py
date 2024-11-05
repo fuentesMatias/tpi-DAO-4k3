@@ -131,20 +131,20 @@ class GestorReserva:
     
     def getReservasFuturas(self):
         # Obtener la fecha actual
-        fecha_actual = datetime.now().date()
+        fechaActual = datetime.now().date()
         reservas = self.getReservas()
-        # Filtrar reservas que tengan fecha de salida mayor a la fecha actual
+        # Determinar que reservas se encuentran en curso
         reservas_futuras = [
             reserva for reserva in reservas
-            if datetime.strptime(reserva._fechaSalida, "%Y-%m-%d").date() > fecha_actual
+            if datetime.strptime(reserva._fechaSalida, "%Y-%m-%d").date() <= fechaActual <= datetime.strptime(reserva._fechaSalida, "%Y-%m-%d").date() 
         ]
-
+        
         return reservas_futuras
     
     def porcentajeOcupacion(self, tipo):
         habitaciones = self.gestorHabitaciones.getHabitacionByTipo(tipo)
         reservasFuturas = self.getReservasFuturas()
-        # habitaciones_ocupadas = [hab for hab in habitaciones if hab.getEstado() == "ocupada"]
+        # habitacionesOcupadas = [hab for hab in habitaciones if hab.getEstado() == "ocupada"]
         # cuento reservas por tipo de habitacion
-        habitaciones_ocupadas = [reserva for reserva in reservasFuturas if reserva.getHabitacion() in [hab.getId() for hab in habitaciones]]
-        return len(habitaciones_ocupadas) / len(habitaciones) * 100
+        habitacionesOcupadas = [reserva for reserva in reservasFuturas if reserva.getHabitacion() in [hab.getId() for hab in habitaciones]]
+        return len(habitacionesOcupadas) / len(habitaciones) * 100
