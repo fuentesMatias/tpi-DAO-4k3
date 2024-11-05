@@ -44,5 +44,12 @@ class GestorHabitaciones():
         habitacionesDispobibles = [Habitacion(*data) for data in habitaciones_data]
         return habitacionesDispobibles
     
+    def getHabitacionByTipo(self, tipo):
+        habitaciones_data = self._db.fetch_query(f"SELECT * FROM habitaciones WHERE tipo = '{tipo}'")
+        habitaciones = [Habitacion(*data) for data in habitaciones_data]
+        return habitaciones
     
-    
+    def porcentajeOcupacion(self, tipo):
+        habitaciones = self.getHabitacionByTipo(tipo)
+        habitaciones_ocupadas = [hab for hab in habitaciones if hab.getEstado() == "ocupada"]
+        return len(habitaciones_ocupadas) / len(habitaciones) * 100

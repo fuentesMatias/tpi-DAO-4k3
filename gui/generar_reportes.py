@@ -12,8 +12,8 @@ class VentanaGenerarReportes:
 
         # Botones principales en la ventana principal
         tk.Button(root, text="Listar Reservas en Periodo", command=self.open_reservas_window).pack(pady=10)
-        tk.Button(root, text="Reporte de Ingresos", command=self.gestorPdf.generar_pdf_ingresos).pack(pady=10)
-        tk.Button(root, text="Reporte de Ocupación Promedio", command=self.open_ocupacion_window).pack(pady=10)
+        tk.Button(root, text="Reporte de Ingresos", command=self.gestorPdf.generarPdfIngresos).pack(pady=10)
+        tk.Button(root, text="Reporte de Ocupación Promedio", command=self.gestorPdf.generarPdfPromedioOcupacion).pack(pady=10)
 
     def open_reservas_window(self):
             reservas_window = tk.Toplevel(self.root)
@@ -38,24 +38,11 @@ class VentanaGenerarReportes:
                 messagebox.showinfo("Reservas", f"Listando reservas desde {desde} hasta {hasta}")
 
                 # Llamada al método para generar el PDF con el rango de fechas seleccionado
-                self.gestorPdf.generar_pdf_reservas(desde, hasta)  # Pasa las fechas al método para generar el PDF
+                self.gestorPdf.generarPdfReservas(desde, hasta)  # Pasa las fechas al método para generar el PDF
 
             # Botón para ejecutar la función listar_reservas
             tk.Button(reservas_window, text="Listar", command=listar_reservas).pack(pady=10)
 
-    def open_ocupacion_window(self):
-        ocupacion_window = tk.Toplevel(self.root)
-        ocupacion_window.title("Reporte de Ocupación Promedio")
-        tk.Label(ocupacion_window, text="Tipo de Habitación:").pack(pady=5)
-        tipo_entry = tk.Entry(ocupacion_window)
-        tipo_entry.pack(pady=5)
-        
-        def generar_reporte_ocupacion():
-            tipo = tipo_entry.get()
-            # Lógica para generar el reporte de ocupación
-            messagebox.showinfo("Reporte de Ocupación", f"Generando reporte de ocupación para tipo de habitación: {tipo}")
-        
-        tk.Button(ocupacion_window, text="Generar", command=generar_reporte_ocupacion).pack(pady=10)
 
 if __name__ == "__main__":
     root = tk.Tk()
