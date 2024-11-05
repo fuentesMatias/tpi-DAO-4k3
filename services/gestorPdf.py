@@ -7,6 +7,7 @@ from services.gestorReserva import GestorReserva
 from services.gestorCliente import GestorCliente
 from services.gestorHabitaciones import GestorHabitaciones
 from services.gestorFactura import gestorFactura
+from datetime import datetime
 
 class GestorPDF:
     def __init__(self):
@@ -16,8 +17,9 @@ class GestorPDF:
         self.gestorHabitaciones = GestorHabitaciones()
         self.gestorReservas = GestorReserva()
         self.gestorFactura = gestorFactura()
+        self.fecha = None
 
-    def generar_pdf_reservas(self, fechaInicio, fechaFin):
+    def generarPdfReservas(self, fechaInicio, fechaFin):
         # Configuración del documento y estilo
         self.doc = SimpleDocTemplate("reporte_reservas.pdf", pagesize=letter)
         styles = getSampleStyleSheet()
@@ -58,7 +60,7 @@ class GestorPDF:
         self.doc.build(elements)
         print("PDF generado con éxito")
         
-    def generar_pdf_ingresos(self):
+    def generarPdfIngresos(self):
         # Configuración del documento y estilo
         self.doc = SimpleDocTemplate("reporte_ingresos.pdf", pagesize=letter)
         styles = getSampleStyleSheet()
@@ -97,6 +99,45 @@ class GestorPDF:
         self.doc.build(elements)
         print("PDF generado con éxito")
         
+        
+    def generarPdfPromedioOcupacion(self,):
+        # fecha actual , aca iria un set.
+        self.fecha = datetime.now().strftime("%Y-%m-%d")
+        
+        # Configuración del documento y estilo
+        self.doc = SimpleDocTemplate("reporte_promedio_ocupacion.pdf", pagesize=letter)
+        styles = getSampleStyleSheet()
+        elements = []
+        # Título y descripción del reporte
+        title = f"Reporte de OCUPACIÓN PROMEDIO por tipo de habitacion en la fecha {self.fecha}"
+        elements.append(Paragraph(title, styles['Title']))
+        elements.append(Spacer(1, 0.2 * inch))
+        # Encabezado de la tabla
+        data = [["Tipo", "Ocupación Promedio"]]
+        # promedio de ocupacion habitacion tipo simple
+        promedioHabitacionesSimples = self.gestorHabitaciones.porcentajeOcupacion("simple")
+        promedioHabitacionesDobles = self.gestorHabitaciones.porcentajeOcupacion("doble")
+        promedioHabitacionesSuites = self.gestorHabitaciones.porcentajeOcupacion("suite")
+        data.append(["Simple", promedioHabitacionesSimples])
+        data.append(["Doble", promedioHabitacionesDobles])
+        data.append(["Suite", promedioHabitacionesSuites])
+        
+        t = Table(data)
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+
+        # Agregar tabla al documento
+        elements.append(t)
+        self.doc.build(elements)
+        print("PDF generado con éxito")
+    
         
 
         
