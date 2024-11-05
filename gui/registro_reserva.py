@@ -4,7 +4,7 @@ from tkcalendar import DateEntry
 # from database.conexion import DbSingleton
 from services.gestorCliente import GestorCliente
 from services.gestorHabitaciones import GestorHabitaciones
-from services.GestorReserva import GestorReserva
+from services.gestorReserva import GestorReserva
 
 class RegistroReserva:
     def __init__(self, root):

@@ -8,6 +8,7 @@ from gui.registro_reserva import RegistroReserva
 from gui.finalizar_estadia import FinalizarEstadia
 from gui.asignar_habitacion import VentanaAsignarEmpleadoAHabitacion
 from services.gestorAsignacion import GestorAsignacion
+from gui.generar_reportes import VentanaGenerarReportes
 
 
 def abrir_ventana(ventana_clase, root):
@@ -116,6 +117,12 @@ def main():
         text="Asignar Empleado a Habitación",
         style="RoundedButton.TButton",
         command=lambda: abrir_ventana(VentanaAsignarEmpleadoAHabitacion, root),
+    ).pack(pady=10)
+    ttk.Button(
+        root,
+        text="Reportes",
+        style="RoundedButton.TButton",
+        command=lambda: abrir_ventana(VentanaGenerarReportes, root),
     ).pack(pady=10)
 
     fondo_label.image = bg_image

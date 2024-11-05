@@ -112,3 +112,19 @@ class GestorReserva:
                 habitaciones = [hab for hab in habitaciones if hab.getId() != reserva.getHabitacion()]
         print(f"Reservas: f{reservas} \nHabitaciones: {habitaciones}")
         return habitaciones
+    
+    def getReservasByFecha(self, fechaInicio, fechaFin):
+        reservas = self.getReservas()  
+        reservas_filtradas = [
+            reserva for reserva in reservas
+            if fechaInicio <= datetime.strptime(reserva.getFechaEntrada(), "%Y-%m-%d").date() <= fechaFin and
+            fechaInicio <= datetime.strptime(reserva.getFechaSalida(), "%Y-%m-%d").date() <= fechaFin
+        ]
+        
+        return reservas_filtradas
+
+    def getReservasByHabitacion(self, id_habitacion):
+        query = "SELECT * FROM reservas WHERE id_habitacion = ?"
+        reservas_data = self._db.fetch_query(query, (id_habitacion,))
+        reservas = [Reserva(*data) for data in reservas_data]
+        return reservas

@@ -62,9 +62,9 @@ CREATE TABLE IF NOT EXISTS asignaciones (
 
 -- Cargar datos en empleados --
 
--- INSERT INTO empleados (nombre, apellido, cargo, sueldo) VALUES
--- ('Matias', 'Fuentes', 'gerente', 50000),
--- ('Lautaro', 'Gregorat', 'recepcionista', 30000),
--- ('Federico', 'Mizzau', 'servicio de limpieza', 25000),
--- ('Ana', 'Martinez', 'servicio de limpieza', 25000),
--- ('Luis', 'Hernandez', 'servicio de limpieza', 25000);
+INSERT INTO empleados (nombre, apellido, cargo, sueldo) VALUES
+('Matias', 'Fuentes', 'gerente', 50000),
+('Lautaro', 'Gregorat', 'recepcionista', 30000),
+('Federico', 'Mizzau', 'servicio de limpieza', 25000),
+('Ana', 'Martinez', 'servicio de limpieza', 25000),
+('Luis', 'Hernandez', 'servicio de limpieza', 25000);
