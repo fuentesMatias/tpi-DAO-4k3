@@ -46,9 +46,7 @@ class GestorReserva:
         
         # validar que la habitacion este disponible
         if habitacion.getEstado() != "disponible":
-            print("La habitacion no esta disponible")
-            print(habitacion.getEstado())
-            return
+            raise ValueError("La habitación no está disponible")
         
         # validar que la fecha de entrada sea menor a la fecha de salida
         if fechaEntrada >= fechaSalida:
@@ -79,7 +77,7 @@ class GestorReserva:
             return reserva
         else:
             print(f"No se encontró ninguna reserva con ID {id_reserva}")
-            return None
+            return []
     
     
     def calcularTotalReserva(self, id_reserva):
@@ -150,3 +148,43 @@ class GestorReserva:
         if len(habitaciones) == 0:
             return "No hay habitaciones de ese tipo"
         return len(habitacionesOcupadas) / len(habitaciones) * 100
+    
+    def getReservasPendientesByIdCliente(self, id_cliente):
+        query = "SELECT * FROM reservas WHERE id_cliente = ? AND estado = 'pendiente'"
+        reservas_data = self._db.fetch_query(query, (id_cliente,))
+        reservas = [Reserva(*data) for data in reservas_data]
+        return reservas
+    
+    def iniciar_estadia(self, id_reserva):
+        # buscar la habitacion de la reserva y validar que la habitacion este disponible, luego pasarla a ocupada y cambiar el estado de la reserva a iniciada
+        reserva = self.getReservaById(id_reserva)
+        habitacion = self.gestorHabitaciones.getHabitacion(reserva.getHabitacion())
+        if habitacion.getEstado() != "disponible":
+            raise ValueError("La habitación no está disponible")
+        
+        query = "UPDATE habitaciones SET estado = 'ocupada' WHERE id = ?"
+        self._db.execute_query(query, (habitacion.getId(),))
+        query = "UPDATE reservas SET estado = 'iniciada' WHERE id = ?"
+        self._db.execute_query(query, (id_reserva,))
+        self._db.commit()
+        
+        
+    def getReservasFinalizablesByClienteId(self, id_cliente):
+        query = "SELECT * FROM reservas WHERE id_cliente = ? AND estado = 'iniciada'"
+        reservas_data = self._db.fetch_query(query, (id_cliente,))
+        reservas = [Reserva(*data) for data in reservas_data]
+        return reservas
+    
+    
+    def finalizarReserva(self, id_reserva):
+        # buscar la habitacion de la reserva y validar que la habitacion este ocupada, luego pasarla a disponible y cambiar el estado de la reserva a finalizada
+        reserva = self.getReservaById(id_reserva)
+        habitacion = self.gestorHabitaciones.getHabitacion(reserva.getHabitacion())
+        if habitacion.getEstado() != "ocupada":
+            raise ValueError("La habitación no está ocupada")
+        
+        query = "UPDATE habitaciones SET estado = 'disponible' WHERE id = ?"
+        self._db.execute_query(query, (habitacion.getId(),))
+        query = "UPDATE reservas SET estado = 'finalizada' WHERE id = ?"
+        self._db.execute_query(query, (id_reserva,))
+        self._db.commit()

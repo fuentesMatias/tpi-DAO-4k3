@@ -1,15 +1,19 @@
 class Reserva:
     def __init__(
-        self, id, cliente, habitacion, fechaEntrada, fechaSalida, cantPersonas
+        self, id, cliente, habitacion, fechaEntrada, fechaSalida, cantPersonas, estado
     ):
         self._id = id
         self._cliente = cliente
         self._habitacion = habitacion
         self._fechaEntrada = fechaEntrada
         self._fechaSalida = fechaSalida
-        self._cantPersonas = cantPersonas        
+        self._cantPersonas = cantPersonas
+        self._estado = estado  
 
 
+    def getEstado(self):
+        return self._estado
+    
     def getId(self):
         return self._id
 
@@ -46,5 +50,8 @@ class Reserva:
     def setCantPersonas(self, cantidad):
         self._cantPersonas = cantidad
 
+    def setEstado(self, estado):
+        self._estado = estado
+    
     def __str__(self) -> str:
-        return f"ID Reserva: {str(self.getId())} | Cliente: {str(self.getCliente())} | Habitacion: {str(self.getHabitacion())} | Fecha de entrada: {self.getFechaEntrada()} | Fecha de salida: {self.getFechaSalida()} | Cantidad de personas: {str(self.getCantPersonas())}"
+        return f"ID Reserva: {str(self.getId())} | Cliente: {str(self.getCliente())} | Habitacion: {str(self.getHabitacion())} | Fecha de entrada: {self.getFechaEntrada()} | Fecha de salida: {self.getFechaSalida()} | Cantidad de personas: {str(self.getCantPersonas())} | Estado: {self.getEstado()}"

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS habitaciones (
     precio REAL NOT NULL
 );
 
--- Tabla de reservas
+-- Tabla de reservas (modificada para incluir estado)
 CREATE TABLE IF NOT EXISTS reservas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     id_cliente INTEGER NOT NULL,
@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS reservas (
     fecha_entrada DATE NOT NULL,
     fecha_salida DATE NOT NULL,
     personas INTEGER NOT NULL,
+    estado TEXT CHECK (estado IN ('pendiente', 'iniciada', 'finalizada')) DEFAULT 'pendiente',
     FOREIGN KEY (id_cliente) REFERENCES clientes(id),
     FOREIGN KEY (id_habitacion) REFERENCES habitaciones(id)
 );

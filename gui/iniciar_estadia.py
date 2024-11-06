@@ -1,22 +1,28 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from services.gestorCliente import GestorCliente
-from services.gestorReserva import GestorReserva
-from services.gestorFactura import gestorFactura
 from database.conexion import DbSingleton
-import datetime
+from services.gestorReserva import GestorReserva
+from services.gestorCliente import GestorCliente
 
-class FinalizarEstadia:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Finalizar Estadia")
-        self.root.geometry("1000x350")
 
-        # Conexión a la BD y gestor de clientes
-        self.db = DbSingleton()
+class IniciarEstadia:
+    def __init__(self, ventana):
+        self.ventana = ventana
+        self.ventana.title("Iniciar Estadia")
+        self.ventana.geometry("1100x400")
+        
+        # centrar la ventana al abrir
+        pantalla_ancho = ventana.winfo_screenwidth()
+        pantalla_alto = ventana.winfo_screenheight()
+        x = (pantalla_ancho - 1100) // 2
+        y = (pantalla_alto - 400) // 2
+        ventana.geometry(f"1100x400+{x}+{y}")
+        
+        
+        
+        self.db = DbSingleton()  # Base de datos
         self.gestor_cliente = GestorCliente()
         self.gestor_reservas = GestorReserva()
-        self.gestor_factura = gestorFactura()
         self.clientes = self.gestor_cliente.getClientes()  # Traer todos los clientes al abrir
 
         # Variables
@@ -24,12 +30,12 @@ class FinalizarEstadia:
         self.selected_reserva = None
 
         # Widgets
-        tk.Label(root, text="Buscar Cliente:").grid(row=0, column=0, padx=10, pady=10)
+        tk.Label(self.ventana, text="Buscar Cliente:").grid(row=0, column=0, padx=10, pady=10)
 
         # Desplegable para búsqueda dinámica
         self.cliente_var = tk.StringVar()
         self.cliente_combobox = ttk.Combobox(
-            root, textvariable=self.cliente_var, width=70
+            self.ventana, textvariable=self.cliente_var, width=70
         )
         self.cliente_combobox.grid(row=0, column=1, padx=10, pady=10)
         self.cliente_combobox.bind("<KeyRelease>", self.filtrar_clientes)
@@ -37,18 +43,20 @@ class FinalizarEstadia:
 
         # Treeview para mostrar reservas
         self.reservas_tree = ttk.Treeview(
-            root, columns=("ID", "Habitación", "Fecha Entrada", "Fecha Salida","Estado"), show="headings"
+            self.ventana, columns=("ID", "Cliente", "Fecha Inicio", "Fecha Fin", "Estado"), show="headings"
         )
+
         self.reservas_tree.heading("ID", text="ID Reserva")
-        self.reservas_tree.heading("Habitación", text="Habitación")
-        self.reservas_tree.heading("Fecha Entrada", text="Fecha Entrada")
-        self.reservas_tree.heading("Fecha Salida", text="Fecha Salida")
-        # estado
+        self.reservas_tree.heading("Cliente", text="Cliente")
+        self.reservas_tree.heading("Fecha Inicio", text="Fecha Inicio")
+        self.reservas_tree.heading("Fecha Fin", text="Fecha Fin")
         self.reservas_tree.heading("Estado", text="Estado")  # Nueva columna
+
         self.reservas_tree.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
         self.reservas_tree.bind("<<TreeviewSelect>>", self.seleccionar_reserva)
 
-        ttk.Button(root, text="Finalizar estadia y Emitir factura", command=self.emitir_factura).grid(row=2, column=1, pady=10)
+        # Botón para iniciar la estadía
+        ttk.Button(self.ventana, text="Iniciar Estadia", command=self.iniciar_estadia).grid(row=2, column=1, pady=20)
 
         # Cargar clientes en el combobox inicialmente
         self.actualizar_combobox([f"{c.getNombre()} {c.getApellido()}" for c in self.clientes])
@@ -74,7 +82,7 @@ class FinalizarEstadia:
         )
 
         if self.selected_cliente:
-            reservas = self.gestor_reservas.getReservasFinalizablesByClienteId(self.selected_cliente.getId())
+            reservas = self.gestor_reservas.getReservasPendientesByIdCliente(self.selected_cliente.getId())
             self.mostrar_reservas(reservas)
 
     def mostrar_reservas(self, reservas):
@@ -84,44 +92,45 @@ class FinalizarEstadia:
             self.reservas_tree.delete(row)
 
         # Insertar reservas en el Treeview con ID temporal para acceder al objeto
-        self.reserva_objs = {}  # Diccionario para almacenar objetos de reserva por ID temporal
-        for i, reserva in enumerate(reservas):
+        for reserva in reservas:
             self.reservas_tree.insert(
-                "", "end", iid=i, values=(
+                "", "end", values=(
                     reserva.getId(),
-                    reserva.getHabitacion(),
+                    f"{self.selected_cliente.getNombre()} {self.selected_cliente.getApellido()}",
                     reserva.getFechaEntrada(),
                     reserva.getFechaSalida(),
-                    reserva.getEstado()
+                    reserva.getEstado()  # Agregar estado aquí
                 )
             )
-            self.reserva_objs[i] = reserva  # Almacena el objeto `Reserva` completo
+
 
     def seleccionar_reserva(self, event):
         """Selecciona una reserva completa al hacer clic en el Treeview."""
         selected_item = self.reservas_tree.focus()
         if selected_item:
-            self.selected_reserva = self.reserva_objs[int(selected_item)]  # Obtener el objeto `Reserva` completo
-            print(self.selected_reserva)
+            # buscar la reserva seleccionada por ID
+            reserva_id = self.reservas_tree.item(selected_item)["values"][0]
+            self.selected_reserva = self.gestor_reservas.getReservaById(reserva_id)
+        else:
+            self.selected_reserva = None
 
-    def emitir_factura(self):
-        """Genera la factura para la reserva seleccionada."""
-        if not self.selected_reserva or not self.selected_cliente:
-            messagebox.showwarning("Advertencia", "Seleccione un cliente y una reserva.")
+    def iniciar_estadia(self):
+        """Inicia la estadía para la reserva seleccionada."""
+        if not self.selected_reserva:
+            messagebox.showwarning("Advertencia", "Seleccione una reserva.")
             return
-        
+
         try:
-            self.gestor_reservas.finalizarReserva(self.selected_reserva.getId())
-            self.gestor_factura.registrarFactura(
-                self.selected_cliente.getId(),
-                self.selected_reserva.getId(),
-            )
-            messagebox.showinfo("Éxito", "Factura emitida correctamente.")
+            # Llamar al método para iniciar la estadía
+            self.gestor_reservas.iniciar_estadia(self.selected_reserva.getId())
+            messagebox.showinfo("Éxito", "Estadía iniciada correctamente.")
+            self.ventana.destroy()  # Cerrar la ventana después de iniciar la estadía
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo emitir la factura: {e}")
+            messagebox.showerror("Error", f"No se pudo iniciar la estadía: {e}")
+
 
 # Ejecución de la ventana
 if __name__ == "__main__":
     root = tk.Tk()
-    app = FinalizarEstadia(root)
+    app = IniciarEstadia(root)
     root.mainloop()
