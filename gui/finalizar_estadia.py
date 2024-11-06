@@ -10,7 +10,14 @@ class FinalizarEstadia:
     def __init__(self, root):
         self.root = root
         self.root.title("Finalizar Estadia")
-        self.root.geometry("1000x350")
+        self.root.geometry("1100x350")
+        # centrar
+        pantalla_ancho = root.winfo_screenwidth()
+        pantalla_alto = root.winfo_screenheight()
+        x = (pantalla_ancho - 1100) // 2
+        y = (pantalla_alto - 350) // 2
+        root.geometry(f"1100x350+{x}+{y}")
+        
 
         # Conexión a la BD y gestor de clientes
         self.db = DbSingleton()
