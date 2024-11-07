@@ -12,6 +12,7 @@ from services.gestorAsignacion import GestorAsignacion
 from gui.generar_reportes import VentanaGenerarReportes
 
 
+
 def abrir_ventana(ventana_clase, root):
     ventana = tk.Toplevel(root)
     instancia = ventana_clase(ventana)

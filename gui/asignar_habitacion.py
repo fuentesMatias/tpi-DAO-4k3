@@ -4,13 +4,20 @@ from tkcalendar import DateEntry
 from services.gestorEmpleado import GestorEmpleado
 from services.gestorHabitaciones import GestorHabitaciones
 from services.gestorAsignacion import GestorAsignacion
-from datetime import datetime
+from datetime import datetime, date
 
 class VentanaAsignarEmpleadoAHabitacion:
     def __init__(self, root):
         self.root = root
         self.root.title("Asignar Empleado a Habitación")
-        self.root.geometry("600x400")
+        self.root.geometry("600x200")
+        # centrar
+        pantalla_ancho = root.winfo_screenwidth()
+        pantalla_alto = root.winfo_screenheight()
+        x = (pantalla_ancho - 600) // 2
+        y = (pantalla_alto - 200) // 2
+        root.geometry(f"600x200+{x}+{y}")
+        
 
         # Instancias de los gestores
         self.gestorAsignacion = GestorAsignacion()
@@ -27,7 +34,7 @@ class VentanaAsignarEmpleadoAHabitacion:
 
         # Widgets
         tk.Label(root, text="Fecha de Asignación:").grid(row=0, column=0, padx=10, pady=10)
-        self.fecha_entry = DateEntry(root, date_pattern="yyyy-MM-dd", width=47)
+        self.fecha_entry = DateEntry(root, date_pattern="yyyy-MM-dd", width=47, mindate=date.today())
         self.fecha_entry.grid(row=0, column=1, padx=10, pady=10)
         self.fecha_entry.bind("<<DateEntrySelected>>", self.cargar_habitaciones_disponibles)
 
