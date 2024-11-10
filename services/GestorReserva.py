@@ -147,4 +147,6 @@ class GestorReserva:
         # habitacionesOcupadas = [hab for hab in habitaciones if hab.getEstado() == "ocupada"]
         # cuento reservas por tipo de habitacion
         habitacionesOcupadas = [reserva for reserva in reservasFuturas if reserva.getHabitacion() in [hab.getId() for hab in habitaciones]]
+        if len(habitaciones) == 0:
+            return ""
         return len(habitacionesOcupadas) / len(habitaciones) * 100
