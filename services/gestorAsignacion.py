@@ -14,7 +14,8 @@ class GestorAsignacion:
         self._habitaciones = self.gestorHabitaciones.getHabitaciones()
         self._empleados = self.gestorEmpleados.getEmpleados()
         self._asignaciones = []
-
+        self.cargarAsignaciones()
+        
     def getAsignaciones(self):
         return self._asignaciones
 
@@ -58,6 +59,7 @@ class GestorAsignacion:
 
         # validar que el empleado no tenga mas de 5 asignaciones
         asignacionesDelEmpleado = self.getAsignacionesActivasByEmpleado(idEmpleado)
+        print(f"Asignaciones del empleado: {len(asignacionesDelEmpleado)}")
 
         if len(asignacionesDelEmpleado) > 5:
             print(f"El empleado debe tener menos de 5 asignaciones activas")
@@ -110,7 +112,7 @@ class GestorAsignacion:
 
             # Comparar fechas y excluir habitaciones asignadas en esa fecha
             if asign_fecha == fecha:
-                print(asign.getId())
+                print(f"Id Asignacion: {asign.getId()}")
                 habitaciones = [
                     hab for hab in habitaciones if hab.getId() != asign.getHabitacion().getId()
                 ]
