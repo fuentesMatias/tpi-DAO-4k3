@@ -115,7 +115,7 @@ class gestorFactura:
         reserva_info = f"""
         <b>Reserva ID:</b> {reserva.getId()}<br/>
         <b>Fecha de Reserva:</b> {reserva.getFechaEntrada()}<br/>
-        <b>Habitación:</b> {reserva.getHabitacion()}<br/>
+        <b>Habitación ID:</b> {reserva.getHabitacion()}<br/>
         """
         elements.append(Paragraph(reserva_info, normal_style))
         elements.append(Spacer(1, 12))

@@ -167,17 +167,11 @@ class GestorReserva:
 
     def porcentajeOcupacion(self, tipo):
         habitaciones = self.gestorHabitaciones.getHabitacionByTipo(tipo)
-        reservasFuturas = self.getReservasFuturas()
-        # habitacionesOcupadas = [hab for hab in habitaciones if hab.getEstado() == "ocupada"]
-        # cuento reservas por tipo de habitacion
-        habitacionesOcupadas = [
-            reserva
-            for reserva in reservasFuturas
-            if reserva.getHabitacion() in [hab.getId() for hab in habitaciones]
-        ]
+        habitaciones_ocupadas = self.gestorHabitaciones.getHabitacionByTipoAndOcupada(tipo)
         if len(habitaciones) == 0:
             return "No hay habitaciones de ese tipo"
-        return len(habitacionesOcupadas) / len(habitaciones) * 100
+        porcentaje = len(habitaciones_ocupadas) / len(habitaciones) * 100
+        return porcentaje
 
     def getReservasPendientesByIdCliente(self, id_cliente):
         query = (

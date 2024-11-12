@@ -62,12 +62,14 @@ class VentanaGenerarReportes:
         messagebox.showinfo(
             "Reportes", "El reporte de ingresos se ha generado correctamente."
         )
+        self.root.destroy()
 
     def generar_pdf_promedio_ocupacion(self):
         self.gestorPdf.generarPdfPromedioOcupacion()
         messagebox.showinfo(
             "Reportes", "El reporte de ocupación promedio se ha generado correctamente."
         )
+        self.root.destroy()
 
     def open_reservas_window(self):
         reservas_window = tk.Toplevel(self.root)
