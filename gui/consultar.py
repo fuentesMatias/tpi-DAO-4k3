@@ -15,6 +15,8 @@ class VentanaConsultaEntidades:
         self.root.title("Consultar Entidades del Sistema")
         self.root.geometry("900x500")
         self.root.configure(bg="#d6f0ff")
+        
+        self.imprimir_boton = None  # Agregar una variable para el botón
 
         # Centrar ventana
         pantalla_ancho = self.root.winfo_screenwidth()
@@ -35,18 +37,21 @@ class VentanaConsultaEntidades:
         style = ttk.Style()
         style.theme_use("clam")
         style.configure(
+            "Treeview",
+            rowheight=40,# Ajusta este valor según la altura deseada
+            font=("Arial", 15)
+        )
+        style.configure(
             "Treeview.Heading",
-            font=("Arial", 10, "bold"),  # Fuente: Arial, Tamaño: 12, Negrita
-            foreground="#4a4a4a",  # Color del texto
-            background="#d0e0ff",  # Color de fondo del encabezado
-            rowheight=25,  # Altura de los encabezados
+            font=("Arial", 10, "bold"),
+            foreground="#4a4a4a",
+            background="#d0e0ff",
+            rowheight=25,
         )
         style.map(
             "Treeview.Heading",
-            background=[
-                ("active", "#b0c4de")
-            ],  # Color al interactuar con el encabezado
-            foreground=[("active", "#000000")],  # Color de texto al interactuar
+            background=[("active", "#b0c4de")],
+            foreground=[("active", "#000000")],
         )
 
         self.entidades = [
@@ -79,35 +84,85 @@ class VentanaConsultaEntidades:
         self.scrollbar.pack(side="right", fill="y")
 
     def mostrar_datos(self, event):
-        entidad = self.selector_entidad.get().lower()
+            entidad = self.selector_entidad.get().lower()
 
-        # Limpiar la tabla
-        for item in self.tree.get_children():
-            self.tree.delete(item)
+            # Eliminar cualquier botón de "Imprimir" existente
+            if self.imprimir_boton:
+                self.imprimir_boton.place_forget()
+                self.imprimir_boton = None
 
-        # Configurar columnas según la entidad seleccionada
-        columnas, datos = self.consultar_datos(entidad)
+            # Limpiar la tabla
+            for item in self.tree.get_children():
+                self.tree.delete(item)
 
-        # Ajustar las columnas y encabezados de la tabla
-        self.tree["columns"] = columnas
-        for col in columnas:
-            self.tree.heading(col, text=col)
-            self.tree.column(
-                col, width=100, anchor="center"
-            )  # Ajustar el ancho de las columnas
+            # Configurar columnas según la entidad seleccionada
+            columnas, datos = self.consultar_datos(entidad)
+
+            # Ajustar las columnas y encabezados de la tabla
+            self.tree["columns"] = columnas + (["Acciones"] if entidad == "facturas" else [])
+            for col in self.tree["columns"]:
+                self.tree.heading(col, text=col)
+                self.tree.column(col, width=100, anchor="center")
 
             # Mostrar datos en la tabla
-        for fila in datos:
-            self.tree.insert("", "end", values=fila)
+            for fila in datos:
+                if entidad == "facturas":
+                    self.agregar_fila_con_boton(fila)
+                else:
+                    self.tree.insert("", "end", values=fila)
+
+    def agregar_fila_con_boton(self, fila):
+            # Almacena el id de la factura en la etiqueta del Treeview
+            item_id = self.tree.insert("", "end", values=fila, tags=(fila[0],))
+
+            # Crear un botón "Imprimir"
+            self.imprimir_boton = tk.Button(
+                self.tree,
+                text="Imprimir",
+                command=lambda: self.imprimir_factura(fila[0]),
+                bg="lightblue",
+                fg="black",
+                height=1,
+                width=7
+            )
+            # Agregar el botón al Treeview
+            self.tree.item(item_id, tags=("btn",))
+            self.tree.bind("<ButtonRelease-1>", lambda e: self.mostrar_botones(e, self.imprimir_boton))
+
+    def mostrar_botones(self, event, btn):
+        selected_item = self.tree.focus()
+        if not selected_item:
+            btn.place_forget()
+            return
+
+        item_tags = self.tree.item(selected_item, "tags")
+        if "btn" in item_tags:
+            bbox = self.tree.bbox(selected_item, column="#{}".format(len(self.tree["columns"])))
+            if bbox:
+                # Calcular la posición centrada del botón dentro de la columna "Acciones"
+                boton_ancho = btn.winfo_reqwidth()
+                boton_alto = btn.winfo_reqheight()
+                x_centrado = bbox[0] + (bbox[2] - boton_ancho) // 2  # Centrar horizontalmente dentro de la columna
+                y_centrado = bbox[1] + (bbox[3] - boton_alto) // 2  # Centrar verticalmente en la celda
+                btn.place(x=x_centrado, y=y_centrado)
+
+
+    def imprimir_factura(self, event):
+        # Obtiene el item seleccionado
+        selected_item = self.tree.focus()
+        if selected_item:
+            # Recupera el ID de la factura del item seleccionado
+            id_factura = self.tree.item(selected_item, "values")[0]
+            
+            print(f"Imprimiendo factura con ID: {id_factura}")
+            gestor = gestorFactura()
+            gestor.imprimirFacturaPDF(gestor.getFacturaById(id_factura))
 
     def consultar_datos(self, entidad):
-        # si la entidad es cliente se consulta al gestor de clientes las columnas y los datos
-
         if entidad == "clientes":
             gestor = GestorCliente()
             columnas = ["ID", "Nombre", "Apellido", "direccion", "Teléfono", "Email"]
             objetos = gestor.getClientes()
-            # obtener los datos de los clientes en una lista usando objeto.getDato()
             datos = [
                 [
                     cliente.getId(),
@@ -119,12 +174,10 @@ class VentanaConsultaEntidades:
                 ]
                 for cliente in objetos
             ]
-
         elif entidad == "habitaciones":
             gestor = GestorHabitaciones()
             columnas = ["ID", "Numero", "Tipo", "Precio", "Estado"]
             objetos = gestor.getHabitaciones()
-            # pasar los objetos a una lista de tuplas
             datos = [
                 [
                     habitacion.getId(),
@@ -135,7 +188,6 @@ class VentanaConsultaEntidades:
                 ]
                 for habitacion in objetos
             ]
-
         elif entidad == "reservas":
             gestor = GestorReserva()
             gestorCliente = GestorCliente()
@@ -161,7 +213,6 @@ class VentanaConsultaEntidades:
                 ]
                 for reserva in objetos
             ]
-
         elif entidad == "facturas":
             gestor = gestorFactura()
             gestorCliente = GestorCliente()
@@ -177,7 +228,6 @@ class VentanaConsultaEntidades:
                 ]
                 for factura in objetos
             ]
-
         elif entidad == "empleados":
             gestor = GestorEmpleado()
             columnas = ["ID", "Nombre", "Apellido", "Cargo", "sueldo"]
@@ -192,7 +242,6 @@ class VentanaConsultaEntidades:
                 ]
                 for empleado in objetos
             ]
-
         elif entidad == "asignaciones":
             gestor = GestorAsignacion()
             gestorEmpleado = GestorEmpleado()

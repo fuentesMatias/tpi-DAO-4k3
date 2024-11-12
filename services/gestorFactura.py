@@ -44,13 +44,7 @@ class gestorFactura:
         # obtener la fecha de emision
         fecha_emision = datetime.date.today()
 
-        lastId = self.getIdFacturaMasReciente()
 
-        factura = Factura(lastId, idCliente, idReserva, fecha_emision, precioTotal)
-
-        self.facturas.append(factura)
-
-        self.imprimirFacturaPDF(factura)
 
         # guardar la factura en la base de datos
         query = "INSERT INTO facturas (id_cliente, id_reserva, fecha_emision, total) VALUES (?, ?, ?, ?)"
@@ -59,6 +53,16 @@ class gestorFactura:
             query, (str(idCliente), str(idReserva), fecha_emision, str(precioTotal))
         )
         self._db.commit()
+        
+        # lastId = self.getIdFacturaMasReciente()
+
+        # factura = Factura(lastId, idCliente, idReserva, fecha_emision, precioTotal)
+    
+        factura = gestorFactura.getFacturaByClienteAndReserva(self, idCliente, idReserva)
+
+        self.facturas.append(factura)
+
+        self.imprimirFacturaPDF(factura)
 
     def getFacturasByReserva(self, idReserva):
         query = "SELECT * FROM facturas WHERE id_reserva = ?"
@@ -189,3 +193,9 @@ class gestorFactura:
         else:
             print(f"Id de la factura mas reciente: {factura_data[0][0]}")
             return factura_data[0][0]
+        
+    def getFacturaById(self, idFactura):
+        query = "SELECT * FROM facturas WHERE id = ?"
+        factura_data = self._db.fetch_query(query, (idFactura,))
+        factura = Factura(*factura_data[0])
+        return factura
