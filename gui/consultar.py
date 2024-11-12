@@ -8,6 +8,7 @@ from services.gestorHabitaciones import GestorHabitaciones
 from services.gestorEmpleado import GestorEmpleado
 from services.gestorAsignacion import GestorAsignacion
 
+
 class VentanaConsultaEntidades:
     def __init__(self, root):
         self.root = root
@@ -25,11 +26,40 @@ class VentanaConsultaEntidades:
 
         # Selector de entidades
         tk.Label(
-            root, text="Seleccione la entidad a consultar:", bg="#d6f0ff", font=("Arial", 14, "bold")
+            root,
+            text="Seleccione la consulta a realizar:",
+            bg="#d6f0ff",
+            font=("Arial", 14, "bold"),
         ).pack(pady=10)
 
-        self.entidades = ["Clientes", "Habitaciones", "Reservas", "Facturas", "Empleados", "Asignaciones"]
-        self.selector_entidad = ttk.Combobox(root, values=self.entidades, state="readonly", font=("Arial", 12))
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure(
+            "Treeview.Heading",
+            font=("Arial", 10, "bold"),  # Fuente: Arial, Tamaño: 12, Negrita
+            foreground="#4a4a4a",  # Color del texto
+            background="#d0e0ff",  # Color de fondo del encabezado
+            rowheight=25,  # Altura de los encabezados
+        )
+        style.map(
+            "Treeview.Heading",
+            background=[
+                ("active", "#b0c4de")
+            ],  # Color al interactuar con el encabezado
+            foreground=[("active", "#000000")],  # Color de texto al interactuar
+        )
+
+        self.entidades = [
+            "Clientes",
+            "Habitaciones",
+            "Reservas",
+            "Facturas",
+            "Empleados",
+            "Asignaciones",
+        ]
+        self.selector_entidad = ttk.Combobox(
+            root, values=self.entidades, state="readonly", font=("Arial", 12)
+        )
         self.selector_entidad.pack(pady=5)
         self.selector_entidad.bind("<<ComboboxSelected>>", self.mostrar_datos)
 
@@ -42,7 +72,9 @@ class VentanaConsultaEntidades:
         self.tree.pack(side="left", fill="both", expand=True)
 
         # Scrollbar
-        self.scrollbar = ttk.Scrollbar(self.frame_tabla, orient="vertical", command=self.tree.yview)
+        self.scrollbar = ttk.Scrollbar(
+            self.frame_tabla, orient="vertical", command=self.tree.yview
+        )
         self.tree.configure(yscroll=self.scrollbar.set)
         self.scrollbar.pack(side="right", fill="y")
 
@@ -60,7 +92,9 @@ class VentanaConsultaEntidades:
         self.tree["columns"] = columnas
         for col in columnas:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=100, anchor='center')  # Ajustar el ancho de las columnas
+            self.tree.column(
+                col, width=100, anchor="center"
+            )  # Ajustar el ancho de las columnas
 
             # Mostrar datos en la tabla
         for fila in datos:
@@ -68,49 +102,114 @@ class VentanaConsultaEntidades:
 
     def consultar_datos(self, entidad):
         # si la entidad es cliente se consulta al gestor de clientes las columnas y los datos
-        
+
         if entidad == "clientes":
             gestor = GestorCliente()
             columnas = ["ID", "Nombre", "Apellido", "direccion", "Teléfono", "Email"]
             objetos = gestor.getClientes()
             # obtener los datos de los clientes en una lista usando objeto.getDato()
-            datos = [[cliente.getId(), cliente.getNombre(), cliente.getApellido(), cliente.getDireccion(), cliente.getTelefono(), cliente.getemail()] for cliente in objetos]
-            
+            datos = [
+                [
+                    cliente.getId(),
+                    cliente.getNombre(),
+                    cliente.getApellido(),
+                    cliente.getDireccion(),
+                    cliente.getTelefono(),
+                    cliente.getemail(),
+                ]
+                for cliente in objetos
+            ]
+
         elif entidad == "habitaciones":
             gestor = GestorHabitaciones()
-            columnas = ["ID","Numero","Tipo","Precio","Estado"]
+            columnas = ["ID", "Numero", "Tipo", "Precio", "Estado"]
             objetos = gestor.getHabitaciones()
             # pasar los objetos a una lista de tuplas
-            datos = [[habitacion.getId(), habitacion.getNumero(), habitacion.getTipo(), habitacion.getPrecioPorNoche(), habitacion.getEstado()] for habitacion in objetos]
+            datos = [
+                [
+                    habitacion.getId(),
+                    habitacion.getNumero(),
+                    habitacion.getTipo(),
+                    f"${habitacion.getPrecioPorNoche()}",
+                    habitacion.getEstado(),
+                ]
+                for habitacion in objetos
+            ]
 
         elif entidad == "reservas":
             gestor = GestorReserva()
             gestorCliente = GestorCliente()
-            columnas = ["ID", "Cliente", "Habitación", "Fecha Entrada", "Fecha Salida","Personas", "Estado"]
+            columnas = [
+                "ID",
+                "Cliente",
+                "Habitación",
+                "Fecha Entrada",
+                "Fecha Salida",
+                "Personas",
+                "Estado",
+            ]
             objetos = gestor.getReservas()
-            datos = [[reserva.getId(), f"{gestorCliente.getClienteById(reserva.getCliente()).getNombre()} {gestorCliente.getClienteById(reserva.getCliente()).getApellido()}", reserva.getHabitacion(), reserva.getFechaEntrada(), reserva.getFechaSalida(),reserva.getCantPersonas(), reserva.getEstado()] for reserva in objetos]
+            datos = [
+                [
+                    reserva.getId(),
+                    f"{gestorCliente.getClienteById(reserva.getCliente()).getNombre()} {gestorCliente.getClienteById(reserva.getCliente()).getApellido()}",
+                    reserva.getHabitacion(),
+                    reserva.getFechaEntrada(),
+                    reserva.getFechaSalida(),
+                    reserva.getCantPersonas(),
+                    reserva.getEstado(),
+                ]
+                for reserva in objetos
+            ]
 
         elif entidad == "facturas":
             gestor = gestorFactura()
             gestorCliente = GestorCliente()
-            columnas = ["ID","cliente", "ID Reserva", "Emision", "Total"]
+            columnas = ["ID", "cliente", "ID Reserva", "Emision", "Total"]
             objetos = gestor.getFacturas()
-            datos = [[factura.getId(),f"{gestorCliente.getClienteById(factura.getCliente()).getNombre()} {gestorCliente.getClienteById(factura.getCliente()).getApellido()}", factura.getReserva(), factura.getFechaEmision(), factura.getTotal()] for factura in objetos]
-            
+            datos = [
+                [
+                    factura.getId(),
+                    f"{gestorCliente.getClienteById(factura.getCliente()).getNombre()} {gestorCliente.getClienteById(factura.getCliente()).getApellido()}",
+                    factura.getReserva(),
+                    factura.getFechaEmision(),
+                    f"${factura.getTotal()}",
+                ]
+                for factura in objetos
+            ]
+
         elif entidad == "empleados":
             gestor = GestorEmpleado()
             columnas = ["ID", "Nombre", "Apellido", "Cargo", "sueldo"]
             objetos = gestor.getEmpleados()
-            datos = [[empleado.getId(), empleado.getNombre(), empleado.getApellido(), empleado.getCargo(),empleado.getSueldo()] for empleado in objetos]
-            
+            datos = [
+                [
+                    empleado.getId(),
+                    empleado.getNombre(),
+                    empleado.getApellido(),
+                    empleado.getCargo(),
+                    empleado.getSueldo(),
+                ]
+                for empleado in objetos
+            ]
+
         elif entidad == "asignaciones":
             gestor = GestorAsignacion()
             gestorEmpleado = GestorEmpleado()
             columnas = ["ID", "Habitación", "Empleado", "Fecha"]
             objetos = gestor.getAsignaciones()
-            datos = [[asignacion.getId(), asignacion.getHabitacion(), f"{gestorEmpleado.getEmpleadoById(asignacion.getEmpleado()).getNombre()} {gestorEmpleado.getEmpleadoById(asignacion.getEmpleado()).getApellido()}", asignacion.getFecha()] for asignacion in objetos]
-            
+            datos = [
+                [
+                    asignacion.getId(),
+                    asignacion.getHabitacion().getNumero(),
+                    f"{asignacion.getEmpleado().getNombre()} {asignacion.getEmpleado().getApellido()}",
+                    asignacion.getFecha(),
+                ]
+                for asignacion in objetos
+            ]
+
         return columnas, datos
+
 
 if __name__ == "__main__":
     root = tk.Tk()
