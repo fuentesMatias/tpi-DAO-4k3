@@ -66,3 +66,11 @@ class GestorHabitaciones:
         )
         habitaciones = [Habitacion(*data) for data in habitaciones_data]
         return habitaciones
+    
+    def getHabitacionByTipoAndOcupada(self, tipo):
+        habitaciones_data = self._db.fetch_query(
+            f"SELECT * FROM habitaciones WHERE tipo = '{tipo}' AND estado = 'ocupada'"
+        )
+        habitaciones = [Habitacion(*data) for data in habitaciones_data]
+        return habitaciones
+    

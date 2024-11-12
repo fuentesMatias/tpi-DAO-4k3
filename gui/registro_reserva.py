@@ -187,15 +187,19 @@ class RegistroReserva:
         gestorReserva = GestorReserva()
         idHabitacion = self.habitacion_combobox.get().split(" - ")[0]
         idCliente = self.cliente_combobox.get().split(" - ")[0]
-        gestorReserva.registrarReserva(
-            idHabitacion,
-            idCliente,
-            self.fecha_entrada_entry.get(),
-            self.fecha_salida_entry.get(),
-            self.personas_combobox.get(),
-        )
-        messagebox.showinfo("Registro", "Reserva registrada exitosamente.")
-        # detruir ventana
+        # capturar excepciones del metodo registrarReserva de gestorReserva
+        try:
+            gestorReserva.registrarReserva(
+                idHabitacion,
+                idCliente,
+                self.fecha_entrada_entry.get_date().strftime("%Y-%m-%d"),
+                self.fecha_salida_entry.get_date().strftime("%Y-%m-%d"),
+                self.personas_combobox.get(),
+            )
+            messagebox.showinfo("Registro Exitoso", "Reserva registrada con éxito.")
+            self.root.destroy()
+        except Exception as e:
+            messagebox.showerror("Registro Fallido", str(e))
         self.root.destroy()
 
     def check_fields(self, event=None):
