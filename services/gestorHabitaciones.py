@@ -5,6 +5,13 @@ class GestorHabitaciones():
     def __init__(self) -> None:
         self._db = DbSingleton()
 
+
+    def obtenerNumerosHabitaciones(self):
+        habitaciones_data = self._db.fetch_query("SELECT numero FROM habitaciones")
+        numeros = [data[0] for data in habitaciones_data]
+        return numeros
+
+
     def getHabitaciones(self):
         self._habitaciones = []
         habitaciones_data = self._db.fetch_query("SELECT * FROM habitaciones")

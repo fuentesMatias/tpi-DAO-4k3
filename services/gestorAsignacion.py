@@ -50,11 +50,9 @@ class GestorAsignacion:
             print("No se pudo asignar la habitacion al empleado")
             return
 
-        # ESTE IF ES EL QUE NO ANDA
         # validar que la habitacion no este asignada
         if not any(
-            hab.getId() == idHabitacion for hab in self.getHabitacionesParaAsignar()
-        ):
+            hab.getId() == habitacion.getId() for hab in self.getHabitacionesParaAsignar(fecha)):
             print(f"La habitacion {idHabitacion} ya esta asignada")
             raise Exception("La habitacion ya se encuentra asignada")
 
@@ -90,17 +88,32 @@ class GestorAsignacion:
 
         return asignacionesActivas
 
-    def getHabitacionesParaAsignar(self):
+
+
+    def getHabitacionesParaAsignar(self, fecha):
+        # Convertir la fecha proporcionada a un objeto de tipo date
+        if isinstance(fecha, str):
+            fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
+
         habitaciones = self.getHabitaciones()
         asignaciones = self.getAsignaciones()
-        # Obtener las asignaciones entre las fechas establecidas
+
+        # Filtrar habitaciones según las asignaciones para la fecha dada
         for asign in asignaciones:
-            if asign.estaActiva():
-                # Si la asignacion está activa, eliminar la habitacion
+            asign_fecha = asign.getFecha()
+            
+            # Asegurarse de que la fecha de asignación esté en el mismo formato
+            if isinstance(asign_fecha, str):
+                asign_fecha = datetime.strptime(asign_fecha, "%Y-%m-%d").date()
+            elif isinstance(asign_fecha, datetime):
+                asign_fecha = asign_fecha.date()
+
+            # Comparar fechas y excluir habitaciones asignadas en esa fecha
+            if asign_fecha == fecha:
+                print(asign.getId())
                 habitaciones = [
-                    hab
-                    for hab in habitaciones
-                    if hab.getId() != asign.getHabitacion().getId()
+                    hab for hab in habitaciones if hab.getId() != asign.getHabitacion().getId()
                 ]
+
         print(f"Asignaciones: {asignaciones} \nHabitaciones: {habitaciones}")
         return habitaciones

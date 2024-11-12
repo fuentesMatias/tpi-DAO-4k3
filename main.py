@@ -6,9 +6,11 @@ from gui.registro_cliente import VentanaRegistrarCliente
 from gui.registro_habitacion import RegistroHabitacion
 from gui.registro_reserva import RegistroReserva
 from gui.finalizar_estadia import FinalizarEstadia
+from gui.iniciar_estadia import IniciarEstadia  # Importamos la nueva ventana
 from gui.asignar_habitacion import VentanaAsignarEmpleadoAHabitacion
 from services.gestorAsignacion import GestorAsignacion
 from gui.generar_reportes import VentanaGenerarReportes
+
 
 
 def abrir_ventana(ventana_clase, root):
@@ -34,10 +36,10 @@ def main():
     # Crear ventana principal
     root = tk.Tk()
     root.title("Sistema de Gestión de Hotel")
-    root.geometry("600x450")
+    root.geometry("1200x750")
     root.configure(background="#b3e5fc")
 
-    centrar_ventana(root, 600, 450)
+    centrar_ventana(root, 1200, 750)
 
     # Agregar ícono a la ventana
     root.iconphoto(False, tk.PhotoImage(file="./assets/hotel.png"))
@@ -45,7 +47,7 @@ def main():
     imagen_fondo = Image.open(
         "./assets/hotel_bg.jpg"
     )  # Reemplaza con tu imagen de fondo
-    imagen_fondo = imagen_fondo.resize((700, 500))  # Ajusta tamaño a la ventana
+    imagen_fondo = imagen_fondo.resize((1200, 750))  # Ajusta tamaño a la ventana
     bg_image = ImageTk.PhotoImage(imagen_fondo)
 
     # Configurar un Label para mostrar la imagen de fondo
@@ -112,6 +114,12 @@ def main():
         style="RoundedButton.TButton",
         command=lambda: abrir_ventana(FinalizarEstadia, root),
     ).pack(pady=10)
+    ttk.Button(
+        root,
+        text="Iniciar Estadia",  # Nuevo botón
+        style="RoundedButton.TButton",
+        command=lambda: abrir_ventana(IniciarEstadia, root),
+    ).pack(pady=10)  # Botón para iniciar estadía
     ttk.Button(
         root,
         text="Asignar Empleado a Habitación",
