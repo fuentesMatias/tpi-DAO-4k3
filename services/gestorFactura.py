@@ -25,7 +25,9 @@ class gestorFactura:
         self.facturas = []
 
     def getFacturas(self):
-        return self.facturas
+        facturas_data = self._db.fetch_query("SELECT * FROM facturas")
+        facturas = [Factura(*data) for data in facturas_data]
+        return facturas
 
     def registrarFactura(self, idCliente, idReserva):
         # validar que el id del cliente y el id de la reserva existan con try except

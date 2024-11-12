@@ -207,6 +207,7 @@ class FinalizarEstadia:
                 self.selected_cliente.getId(),
                 self.selected_reserva.getId(),
             )
+            self.root.destroy()
             messagebox.showinfo("Éxito", "Factura emitida correctamente.")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo emitir la factura: {e}")

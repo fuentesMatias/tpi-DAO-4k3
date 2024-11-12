@@ -10,6 +10,7 @@ from gui.iniciar_estadia import IniciarEstadia  # Importamos la nueva ventana
 from gui.asignar_habitacion import VentanaAsignarEmpleadoAHabitacion
 from services.gestorAsignacion import GestorAsignacion
 from gui.generar_reportes import VentanaGenerarReportes
+from gui.consultar import VentanaConsultaEntidades
 
 
 
@@ -131,6 +132,12 @@ def main():
         text="Reportes",
         style="RoundedButton.TButton",
         command=lambda: abrir_ventana(VentanaGenerarReportes, root),
+    ).pack(pady=10)
+    ttk.Button(
+        root,
+        text="Consultas",
+        style="RoundedButton.TButton",
+        command=lambda: abrir_ventana(VentanaConsultaEntidades, root),
     ).pack(pady=10)
 
     fondo_label.image = bg_image

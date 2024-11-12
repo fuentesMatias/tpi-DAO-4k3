@@ -195,6 +195,8 @@ class RegistroReserva:
             self.personas_combobox.get(),
         )
         messagebox.showinfo("Registro", "Reserva registrada exitosamente.")
+        # detruir ventana
+        self.root.destroy()
 
     def check_fields(self, event=None):
         # Validar si todos los campos están completos

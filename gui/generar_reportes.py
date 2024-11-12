@@ -113,6 +113,7 @@ class VentanaGenerarReportes:
 
             # Llamada al método para generar el PDF con el rango de fechas seleccionado
             self.gestorPdf.generarPdfReservas(desde, hasta)
+            self.root.destroy()
 
         # Botón para ejecutar la función listar_reservas
         ttk.Button(

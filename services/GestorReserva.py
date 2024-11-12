@@ -118,7 +118,7 @@ class GestorReserva:
             if (
                 fecha_entrada <= reserva.getFechaSalida()
                 and fecha_salida >= reserva.getFechaEntrada()
-                and reserva.getEstado() != 'finalizada' 
+                # and reserva.getEstado() != 'finalizada' 
             ):
                 # Si las fechas se solapan, la habitación no está disponible, eliminar de la lista de habitaciones comparandos los ids
                 habitaciones = [

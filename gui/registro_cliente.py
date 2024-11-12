@@ -1,4 +1,5 @@
 import tkinter as tk
+import re
 from tkinter import ttk, messagebox
 from database.conexion import DbSingleton
 from services.gestorCliente import GestorCliente
@@ -155,8 +156,12 @@ class VentanaRegistrarCliente:
         return len(chars) >= 3 and len(numbers) <= 6
     
     def validate_mail(self, email):
-        chars = [char for char in email if char.isalpha()]
-        return "@" in email and "." in email and len(chars) >= 4 and chars[0] != "@" and chars[-1] != "."
+        # chars = [char for char in email if char.isalpha()]
+        # return "@" in email and "." in email and len(chars) >= 4 and chars[0] != "@" and chars[-1] != "."
+        pattern = r"^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]{4,}\.[a-zA-Z]{2,}$"
+    
+        # Verificar si el correo cumple con la expresión regular
+        return re.match(pattern, email) is not None
 
     def validate_form(self, *args):
         # Limpiamos todos los mensajes de error al iniciar la validación

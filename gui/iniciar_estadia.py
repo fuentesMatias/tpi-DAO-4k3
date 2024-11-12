@@ -175,6 +175,7 @@ class IniciarEstadia:
         try:
             self.gestor_reservas.iniciar_estadia(reserva_id)
             messagebox.showinfo("Éxito", "Estadía iniciada correctamente.")
+            # destruir la ventana
             self.ventana.destroy()
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo iniciar la estadía: {e}")
