@@ -103,6 +103,7 @@ class FinalizarEstadia:
         self.reservas_tree.grid(
             row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew"
         )
+        self.reservas_tree.bind("<<TreeviewSelect>>", self.seleccionar_reserva)
 
         # Configuración del Treeview con estilo
         self.reservas_tree.tag_configure("oddrow", background="#E8E8E8")
@@ -163,7 +164,9 @@ class FinalizarEstadia:
         # Limpiar Treeview
         for row in self.reservas_tree.get_children():
             self.reservas_tree.delete(row)
-
+        self.reserva_objs = (
+            {}
+        )  # Diccionario para almacenar objetos de reserva por ID temporal
         for i, reserva in enumerate(reservas):
             tag = "evenrow" if i % 2 == 0 else "oddrow"
             self.reservas_tree.insert(
@@ -179,23 +182,35 @@ class FinalizarEstadia:
                 ),
                 tags=(tag,),
             )
+            self.reserva_objs[i] = reserva
+
+    def seleccionar_reserva(self, event):
+        """Selecciona una reserva completa al hacer clic en el Treeview."""
+        selected_item = self.reservas_tree.focus()
+        if selected_item:
+            self.selected_reserva = self.reserva_objs[
+                int(selected_item)
+            ]  # Obtener el objeto `Reserva` completo
+            print(self.selected_reserva)
 
     def emitir_factura(self):
-        """Finaliza la estadía y emite la factura."""
-        selected_item = self.reservas_tree.selection()
-        if not selected_item:
-            messagebox.showerror("Error", "Debe seleccionar una reserva")
+        """Genera la factura para la reserva seleccionada."""
+        if not self.selected_reserva or not self.selected_cliente:
+            messagebox.showwarning(
+                "Advertencia", "Seleccione un cliente y una reserva."
+            )
             return
 
-        reserva_id = self.reservas_tree.item(selected_item)["values"][0]
-
         try:
-            self.gestor_factura.finalizarEstadia(reserva_id)
-            messagebox.showinfo(
-                "Éxito", "Estadía finalizada y factura emitida con éxito"
+            self.gestor_reservas.finalizarReserva(self.selected_reserva.getId())
+            self.gestor_factura.registrarFactura(
+                self.selected_cliente.getId(),
+                self.selected_reserva.getId(),
             )
+            self.root.destroy()
+            messagebox.showinfo("Éxito", "Factura emitida correctamente.")
         except Exception as e:
-            messagebox.showerror("Error", f"Error al finalizar estadía: {e}")
+            messagebox.showerror("Error", f"No se pudo emitir la factura: {e}")
 
 
 if __name__ == "__main__":

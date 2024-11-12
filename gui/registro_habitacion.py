@@ -53,7 +53,6 @@ class RegistroHabitacion:
         
         self.numero_entry = tk.Entry(
             frame, validate="key",
-            validatecommand=(root.register(self.validar_entrada_numerica), "%P"),
             **input_style
         )
         self.numero_entry.grid(row=0, column=1, padx=10, pady=10)
@@ -77,10 +76,11 @@ class RegistroHabitacion:
         
         self.precio_entry = tk.Entry(
             frame, validate="key",
-            validatecommand=(root.register(self.validar_entrada_numerica), "%P"),
             **input_style
         )
         self.precio_entry.grid(row=2, column=1, padx=10, pady=10)
+        self.precio_error_label = tk.Label(frame, text="", fg="red", bg="#d6f0ff", font=("Arial", 12))
+        self.precio_error_label.grid(row=2, column=2, padx=5, pady=5)
 
         # Botón para registrar
         self.registrar_btn = ttk.Button(
@@ -99,7 +99,16 @@ class RegistroHabitacion:
         return valor.isdigit() or valor == ""
 
     def validar_numero(self, event=None):
+        # Obtener y limpiar el valor actual del campo
         numero = self.numero_entry.get().strip()
+        
+        # Limitar a 10 caracteres si supera este límite
+        if len(numero) > 10:
+            numero = numero[:10]
+            self.numero_entry.delete(0, tk.END)
+            self.numero_entry.insert(0, numero)
+
+        # Validar que el campo contiene solo dígitos y es mayor a 0
         if numero.isdigit() and int(numero) > 0:
             if self.numero_ya_registrado(int(numero)):
                 self.error_label.config(text="Número ya registrado")
@@ -111,18 +120,29 @@ class RegistroHabitacion:
             self.error_label.config(text="Número no válido")
             self.registrar_btn.config(state=tk.DISABLED)
 
+
     def validar_tipo(self, event=None):
         tipo = self.tipo_selector.get()
         if tipo:
             self.validar_formulario_completo()
         else:
             self.registrar_btn.config(state=tk.DISABLED)
-
     def validar_precio(self, event=None):
-        precio = self.precio_entry.get().strip()
-        if self.es_numero_valido(precio):
+        # Obtener y limpiar el valor actual del campo
+        numero = self.precio_entry.get().strip()
+        
+        # Limitar a 10 caracteres si supera este límite
+        if len(numero) > 10:
+            numero = numero[:10]
+            self.precio_entry.delete(0, tk.END)
+            self.precio_entry.insert(0, numero)
+
+        # Validar que el campo contiene solo dígitos y es mayor a 0
+        if numero.isdigit() and int(numero) > 0:
+            self.precio_error_label.config(text="")
             self.validar_formulario_completo()
         else:
+            self.precio_error_label.config(text="Precio no válido")
             self.registrar_btn.config(state=tk.DISABLED)
 
     def validar_formulario_completo(self):
@@ -151,7 +171,7 @@ class RegistroHabitacion:
         try:
             self.gestorHabitacion.registrarHabitacion(numero, tipo, precio)
             messagebox.showinfo("Éxito", f"Habitación {numero} registrada con éxito")
-            self.limpiar_campos()
+            self.root.destroy()
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo registrar la habitación: {e}")
 

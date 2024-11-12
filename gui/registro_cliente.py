@@ -1,4 +1,5 @@
 import tkinter as tk
+import re
 from tkinter import ttk, messagebox
 from database.conexion import DbSingleton
 from services.gestorCliente import GestorCliente
@@ -147,6 +148,21 @@ class VentanaRegistrarCliente:
         elif len(current_value) > 10:
             self.telefono_var.set(current_value[:10])
 
+    def validate_address(self, address):
+        # Filtra los caracteres alfabéticos de la dirección
+        chars = [char for char in address if char.isalpha()]
+        numbers = [char for char in address if char.isdigit()]
+        # Verifica que haya al menos 3 letras y menos de 6 números
+        return len(chars) >= 3 and len(numbers) <= 6
+    
+    def validate_mail(self, email):
+        # chars = [char for char in email if char.isalpha()]
+        # return "@" in email and "." in email and len(chars) >= 4 and chars[0] != "@" and chars[-1] != "."
+        pattern = r"^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]{4,}\.[a-zA-Z]{2,}$"
+    
+        # Verificar si el correo cumple con la expresión regular
+        return re.match(pattern, email) is not None
+
     def validate_form(self, *args):
         # Limpiamos todos los mensajes de error al iniciar la validación
         for status_label_name in [
@@ -179,7 +195,7 @@ class VentanaRegistrarCliente:
         if not self.check_field(
             self.direccion_var,
             "direccion_status",
-            lambda v: 5 <= len(v.strip()) <= 30,
+            lambda v: 5 <= len(v.strip()) <= 30 and self.validate_address(v),
             "Dirección inválida",
         ):
             return
@@ -195,7 +211,7 @@ class VentanaRegistrarCliente:
         if not self.check_field(
             self.email_var,
             "email_status",
-            lambda v: "@" in v and "." in v,
+            lambda v: self.validate_mail(v),
             "Email inválido",
         ):
             return

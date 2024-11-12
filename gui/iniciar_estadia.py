@@ -138,9 +138,10 @@ class IniciarEstadia:
         self.selected_cliente = next(
             (c for c in self.clientes if f"{c.getNombre()} {c.getApellido()}" == cliente_nombre), None
         )
-
+        print(f"Cliente id: {self.selected_cliente.getId()}")
         if self.selected_cliente:
             reservas = self.gestor_reservas.getReservasPendientesByIdCliente(self.selected_cliente.getId())
+            print(f"Reservas: {reservas}")
             self.mostrar_reservas(reservas)
 
     def mostrar_reservas(self, reservas):
@@ -174,6 +175,7 @@ class IniciarEstadia:
         try:
             self.gestor_reservas.iniciar_estadia(reserva_id)
             messagebox.showinfo("Éxito", "Estadía iniciada correctamente.")
+            # destruir la ventana
             self.ventana.destroy()
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo iniciar la estadía: {e}")

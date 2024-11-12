@@ -62,9 +62,38 @@ CREATE TABLE IF NOT EXISTS asignaciones (
 
 -- Cargar datos en empleados --
 
-INSERT INTO empleados (nombre, apellido, cargo, sueldo) VALUES
-('Matias', 'Fuentes', 'gerente', 50000),
-('Lautaro', 'Gregorat', 'recepcionista', 30000),
-('Federico', 'Mizzau', 'servicio de limpieza', 25000),
-('Ana', 'Martinez', 'servicio de limpieza', 25000),
-('Luis', 'Hernandez', 'servicio de limpieza', 25000);
+INSERT INTO empleados (nombre, apellido, cargo, sueldo)
+SELECT 'Matias', 'Fuentes', 'gerente', 50000
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM empleados 
+    WHERE nombre = 'Matias' AND apellido = 'Fuentes' AND cargo = 'gerente'
+)
+UNION ALL
+SELECT 'Lautaro', 'Gregorat', 'recepcionista', 30000
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM empleados 
+    WHERE nombre = 'Lautaro' AND apellido = 'Gregorat' AND cargo = 'recepcionista'
+)
+UNION ALL
+SELECT 'Federico', 'Mizzau', 'servicio de limpieza', 25000
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM empleados 
+    WHERE nombre = 'Federico' AND apellido = 'Mizzau' AND cargo = 'servicio de limpieza'
+)
+UNION ALL
+SELECT 'Ana', 'Martinez', 'servicio de limpieza', 25000
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM empleados 
+    WHERE nombre = 'Ana' AND apellido = 'Martinez' AND cargo = 'servicio de limpieza'
+)
+UNION ALL
+SELECT 'Luis', 'Hernandez', 'servicio de limpieza', 25000
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM empleados 
+    WHERE nombre = 'Luis' AND apellido = 'Hernandez' AND cargo = 'servicio de limpieza'
+);
